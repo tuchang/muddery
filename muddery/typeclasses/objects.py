@@ -244,6 +244,70 @@ class MudderyObject(DefaultObject):
             for field in data._meta.fields:
                 setattr(self.dfield, field.name, data.serializable_value(field.name))
 
+    def load_custom_fields(self, key):
+        """
+        Load custom field data.
+
+        Args:
+            key: (String) object's data key.
+
+        Returns:
+            None
+        """
+        # Get model and key names.
+        if not key:
+            key = self.get_data_key()
+            if not key:
+                return
+
+        typeclass_key = getattr(self.dfield, "typeclass", None)
+
+        data_models = set(OBJECT_KEY_HANDLER.get_models(key))
+
+        related_tables = []
+        for table_info in DATA_SETS.custom_tables.all():
+            # If set both related_table and related_typeclass are set, check both,
+            # or check the one which is set.
+            match_table = False
+            match_typeclass = False
+
+            if table_info.related_table:
+                if table_info.related_table in data_models:
+                    match_table = True
+            else:
+                match_table = True
+
+            if table_info.related_typeclass:
+                if typeclass_key == table_info.related_typeclass:
+                    match_typeclass = True
+                else:
+                    # check inherence
+                    typeclass = DATA_SETS.typeclasses.filter(key=table_info.related_typeclass)
+                    if typeclass:
+                        typeclass = typeclass[0]
+                        if self.is_typeclass(typeclass.path, exact=False):
+                            match_typeclass = True
+            else:
+                match_typeclass = True
+                            
+            if match_table and match_typeclass:
+                related_tables.append(table_info.ctable)
+
+        for table_name in related_tables:
+            # Get db model
+            records = DATA_SETS.custom_records.filter(key=key, ctable=table_name)
+            for record in records:
+                serializable_value = record.value
+                if serializable_value == "":
+                    value = None
+                else:
+                    try:
+                        value = ast.literal_eval(serializable_value)
+                    except (SyntaxError, ValueError), e:
+                        # treat as a raw string
+                        value = serializable_value
+                setattr(self.dfield, record.cfield, value)
+                
     def load_data(self, set_location=True):
         """
         Set data to the object."
@@ -251,6 +315,7 @@ class MudderyObject(DefaultObject):
         key = self.get_data_key()
         if key:
             self.load_data_fields(key)
+            self.load_custom_fields(key)
 
             # reset typeclass
             if key[:len(settings.REVERSE_EXIT_PREFIX)] == settings.REVERSE_EXIT_PREFIX:
@@ -328,7 +393,7 @@ class MudderyObject(DefaultObject):
         """
         typeclass_path = ""
         try:
-            data = DATA_SETS.typeclasses.objects.get(key=typeclass_key)
+            data = DATA_SETS.typeclasses.get(key=typeclass_key)
             typeclass_path = data.path
         except Exception, e:
             pass
@@ -503,7 +568,7 @@ class MudderyObject(DefaultObject):
         icon_key = getattr(self.dfield, "icon", None)
         if icon_key:
             try:
-                resource_info = DATA_SETS.icon_resources.objects.get(key=icon_key)
+                resource_info = DATA_SETS.icon_resources.get(key=icon_key)
                 self.icon = resource_info.resource.name
             except Exception, e:
                 logger.log_errmsg("Load icon %s error: %s" % (icon_key, e))

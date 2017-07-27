@@ -42,7 +42,7 @@ def validate_object_key(model):
     # Get models.
     from muddery.worlddata.data_sets import DATA_SETS
     for data_settings in DATA_SETS.object_data:
-        if data_settings.model_name == model.__class__.__name__:
+        if data_settings.model_name() == model.__class__.__name__:
             # Models will validate unique values of its own,
             # so we do not validate them here.
             continue
@@ -54,7 +54,7 @@ def validate_object_key(model):
 
         error = ValidationError("The key '%(value)s' already exists in model %(model)s.",
                                 code="unique",
-                                params={"value": model.key, "model": data_settings.model_name})
+                                params={"value": model.key, "model": data_settings.model_name()})
         raise ValidationError({"key": error})
 
 # ------------------------------------------------------------
@@ -78,6 +78,112 @@ class SystemData(models.Model):
         abstract = True
         verbose_name = "System Data"
         verbose_name_plural = "System Data"
+        
+        
+# ------------------------------------------------------------
+#
+# Custom table's names and information.
+# They are logical tables.
+#
+# ------------------------------------------------------------
+class custom_tables(models.Model):
+    """
+    Custom table's names and information.
+    They are logical tables.
+    """
+
+    # custom table's name
+    ctable = models.CharField(max_length=KEY_LENGTH, unique=True)
+    
+    # table's readable name
+    verbose_name = models.CharField(max_length=NAME_LENGTH, blank=True)
+    
+    # related typeclass's key
+    related_typeclass = models.CharField(max_length=KEY_LENGTH, blank=True)
+    
+    # related real table's name
+    related_table = models.CharField(max_length=KEY_LENGTH, blank=True)
+    
+    # table's description
+    desc = models.TextField(blank=True)
+    
+    class Meta:
+        "Define Django meta options"
+        abstract = True
+        verbose_name = "Table's Information"
+        verbose_name_plural = "Table's Information"
+        
+    def clean(self):
+        if self.ctable:
+            if not re.match(re_attribute_key, self.ctable):
+                error = ValidationError("Table's name can only contain letters, numbers and underscores and must begin with a letter or an underscore.")
+                raise ValidationError({"ctable": error})
+
+
+# ------------------------------------------------------------
+#
+# Custom fields. Users can add custom fields to custom tables.
+#
+# ------------------------------------------------------------
+class custom_fields(models.Model):
+    """
+    Custom fields. Users can add custom fields to custom tables.
+    """
+    
+    # custom table's name
+    ctable = models.CharField(max_length=KEY_LENGTH, db_index=True)
+    
+    # custom field's name
+    cfield = models.CharField(max_length=KEY_LENGTH)
+    
+    # field's readable name
+    verbose_name = models.CharField(max_length=NAME_LENGTH, blank=True)
+    
+    # attribute's desc
+    desc = models.TextField(blank=True)
+    
+    class Meta:
+        "Define Django meta options"
+        abstract = True
+        verbose_name = "Custom Field"
+        verbose_name_plural = "Custom Fields"
+        unique_together = ("ctable", "cfield")
+        
+    def clean(self):
+        if self.cfield:
+            if not re.match(re_attribute_key, self.cfield):
+                error = ValidationError("Fields can only contain letters, numbers and underscores and must begin with a letter or an underscore.")
+                raise ValidationError({"cfield": error})
+
+
+# ------------------------------------------------------------
+#
+# Custom records of custom fields.
+#
+# ------------------------------------------------------------
+class custom_records(models.Model):
+    """
+    Custom records of custom fields.
+    """
+
+    # record's key
+    key = models.CharField(max_length=KEY_LENGTH, db_index=True)
+
+    # custom table's name
+    ctable = models.CharField(max_length=KEY_LENGTH, db_index=True)
+    
+    # custom field's name
+    cfield = models.CharField(max_length=KEY_LENGTH)
+    
+    # record's value
+    value = models.TextField(max_length=VALUE_LENGTH, blank=True)
+    
+    class Meta:
+        "Define Django meta options"
+        abstract = True
+        verbose_name = "Custom Field"
+        verbose_name_plural = "Custom Fields"
+        unique_together = ("key", "ctable", "cfield")
 
 
 # ------------------------------------------------------------
@@ -828,84 +934,6 @@ class career_equipments(models.Model):
         verbose_name = "Career Equip Relation"
         verbose_name_plural = "Career Equip Relations"
         unique_together = ("career", "equipment")
-        
-        
-# ------------------------------------------------------------
-#
-# attribute's information
-#
-# ------------------------------------------------------------
-class attributes_info(models.Model):
-    "attributes's information"
-    
-    # attribute db field's name. It must be a attribute field name in character models.
-    field = models.CharField(max_length=KEY_LENGTH, unique=True)
-    
-    # attribute's key, chars and numbers only.
-    key = models.CharField(max_length=KEY_LENGTH, blank=True)
-    
-    # attribute's readable name.
-    name = models.CharField(max_length=KEY_LENGTH, blank=True)
-    
-    # attribute's desc
-    desc = models.TextField(blank=True)
-    
-    class Meta:
-        "Define Django meta options"
-        abstract = True
-        verbose_name = "Attrubute Information"
-        verbose_name_plural = "Attribute Information"
-        
-    def clean(self):
-        if self.key:
-            if not re.match(re_attribute_key, self.key):
-                error = ValidationError("Keys can only contain letters, numbers and underscores and must begin with a letter or an underscore.")
-                raise ValidationError({"key": error})
-        
-
-# ------------------------------------------------------------
-#
-# Character attribute's information.
-#
-# ------------------------------------------------------------
-class character_attributes_info(attributes_info):
-    "Character's all available attributes"
-    
-    class Meta:
-        "Define Django meta options"
-        abstract = True
-        verbose_name = "Character Attrubute Information"
-        verbose_name_plural = "Character Attribute Information"
-        
-        
-# ------------------------------------------------------------
-#
-# Equipment attribute's information.
-#
-# ------------------------------------------------------------
-class equipment_attributes_info(attributes_info):
-    "Equipment's all available attributes"
-    
-    class Meta:
-        "Define Django meta options"
-        abstract = True
-        verbose_name = "Equipment Attrubute Information"
-        verbose_name_plural = "Equipment Attribute Information"
-        
-        
-# ------------------------------------------------------------
-#
-# Food attribute's information.
-#
-# ------------------------------------------------------------
-class food_attributes_info(attributes_info):
-    "Food's all available attributes"
-    
-    class Meta:
-        "Define Django meta options"
-        abstract = True
-        verbose_name = "Food Attrubute Information"
-        verbose_name_plural = "Food Attribute Information"
 
 
 # ------------------------------------------------------------
@@ -1071,10 +1099,10 @@ class common_characters(models.Model):
         from muddery.worlddata.data_sets import DATA_SETS
 
         try:
-            DATA_SETS.character_models.objects.get(key=self.model, level=self.level)
+            DATA_SETS.character_models.get(key=self.model, level=self.level)
         except Exception, e:
             message = "Can not get this level's data."
-            levels = DATA_SETS.character_models.objects.filter(key=self.model)
+            levels = DATA_SETS.character_models.filter(key=self.model)
             available = [str(level.level) for level in levels]
             if len(available) == 1:
                 message += " Available level: " + available[0]

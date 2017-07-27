@@ -5,7 +5,6 @@ CommonObject is the object that players can put into their inventory.
 
 from muddery.typeclasses.objects import MudderyObject
 from muddery.utils.exception import MudderyError
-from muddery.utils.attributes_info_handler import FOOD_ATTRIBUTES_INFO, EQUIPMENT_ATTRIBUTES_INFO
 from muddery.utils.localized_strings_handler import _
 
 
@@ -114,15 +113,6 @@ class MudderyFood(MudderyCommonObject):
     This is a food. Players can use it to change their properties, such as hp, mp,
     strength, etc.
     """
-    def after_data_loaded(self):
-        """
-        Init the character.
-        """
-        super(MudderyFood, self).after_data_loaded()
-
-        # Load custom attributes.
-        self.load_custom_attributes(FOOD_ATTRIBUTES_INFO)
-
     def take_effect(self, user, number):
         """
         Use this object.
@@ -191,6 +181,7 @@ class MudderyFood(MudderyCommonObject):
                 status_changed = True
 
             # set result
+            """
             attribute_info = FOOD_ATTRIBUTES_INFO.for_key(key)
                 
             if result:
@@ -200,6 +191,7 @@ class MudderyFood(MudderyCommonObject):
                 result += "%s +%s" % (attribute_info["name"], increment)
             else:
                 result += "%s %s" % (attribute_info["name"], increment)
+            """
 
         if status_changed:
             user.show_status()
@@ -229,9 +221,6 @@ class MudderyEquipment(MudderyCommonObject):
         Load equipments data.
         """
         super(MudderyEquipment, self).after_data_loaded()
-
-        # Load custom attributes.
-        self.load_custom_attributes(EQUIPMENT_ATTRIBUTES_INFO)
 
         self.type = getattr(self.dfield, "type", "")
         self.position = getattr(self.dfield, "position", "")

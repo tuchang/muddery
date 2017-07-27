@@ -1,0 +1,5 @@
+ctable,cfield,verbose_name,desc
+exit_locks,unlock_condition,,
+exit_locks,unlock_verb,,
+exit_locks,locked_desc,,
+exit_locks,auto_unlock,,

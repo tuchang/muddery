@@ -4,6 +4,46 @@ from muddery.worlddata import model_base
 
 # ------------------------------------------------------------
 #
+# Custom table's names and information.
+# They are logical tables.
+#
+# ------------------------------------------------------------
+class custom_tables(model_base.custom_tables):
+    """
+    Custom table's names and information.
+    They are logical tables.
+    """
+    pass
+
+
+# ------------------------------------------------------------
+#
+# Custom fields. Uses can add custom fields to both custom tables
+# and system tables.
+#
+# ------------------------------------------------------------
+class custom_fields(model_base.custom_fields):
+    """
+    Custom fields. Uses can add custom fields to both custom tables
+    and system tables.
+    """
+    pass
+
+
+# ------------------------------------------------------------
+#
+# Custom records of custom fields.
+#
+# ------------------------------------------------------------
+class custom_records(model_base.custom_records):
+    """
+    Custom records of custom fields.
+    """
+    pass
+
+
+# ------------------------------------------------------------
+#
 # game's basic settings
 #
 # ------------------------------------------------------------
@@ -190,37 +230,6 @@ class character_careers(model_base.character_careers):
 # ------------------------------------------------------------
 class career_equipments(model_base.career_equipments):
     "Store career and equipment type's relationship."
-    pass
-
-
-
-# ------------------------------------------------------------
-#
-# character attributes
-#
-# ------------------------------------------------------------
-class character_attributes_info(model_base.character_attributes_info):
-    "character attributes"
-    pass
-
-
-# ------------------------------------------------------------
-#
-# Equipment attribute's information.
-#
-# ------------------------------------------------------------
-class equipment_attributes_info(model_base.equipment_attributes_info):
-    "Equipment's all available attributes"
-    pass
-
-
-# ------------------------------------------------------------
-#
-# Food attribute's information.
-#
-# ------------------------------------------------------------
-class food_attributes_info(model_base.food_attributes_info):
-    "Food attribute's information."
     pass
 
 

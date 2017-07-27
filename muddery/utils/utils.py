@@ -154,8 +154,8 @@ def get_unlocalized_py_strings(filename, filter):
                 if str or cate:
                     if filter:
                         # check database
-                        records = DATA_SETS.localized_strings.objects.filter(category=cate,
-                                                                             origin=str)
+                        records = DATA_SETS.localized_strings.filter(category=cate,
+                                                                     origin=str)
                         if not records:
                             strings.add((str, cate,))
                     else:

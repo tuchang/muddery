@@ -33,12 +33,12 @@ class ObjectKeyHandler(object):
         data_settings_list.extend(DATA_SETS.object_additional_data)
         for data_settings in data_settings_list:
             try:
-                for record in data_settings.objects.all():
+                for record in data_settings.all():
                     # Add key's model name.
                     key = record.serializable_value("key")
                     if key not in self.key_model:
                         self.key_model[key] = []
-                    self.key_model[key].append(data_settings.model_name)
+                    self.key_model[key].append(data_settings.model_name())
             except Exception, e:
                 pass
 

@@ -1,0 +1,2 @@
+ctable,verbose_name,related_typeclass,related_table,desc
+exit_locks,,CLASS_LOCKED_EXIT,,

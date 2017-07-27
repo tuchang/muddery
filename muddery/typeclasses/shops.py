@@ -39,7 +39,7 @@ class MudderyShop(MudderyObject):
         Load shop goods.
         """
         # shops records
-        goods_records = DATA_SETS.shop_goods.objects.filter(shop=self.get_data_key())
+        goods_records = DATA_SETS.shop_goods.filter(shop=self.get_data_key())
 
         goods_keys = set([record.key for record in goods_records])
 

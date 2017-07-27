@@ -44,7 +44,7 @@ class QuestDependencyHandler(object):
         self.quest_depencences[quest] = []
         
         # Get db model
-        dependencies = DATA_SETS.quest_dependencies.objects.filter(quest=quest)
+        dependencies = DATA_SETS.quest_dependencies.filter(quest=quest)
 
         # Add db fields to data object.
         data = []

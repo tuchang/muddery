@@ -26,7 +26,6 @@ from muddery.utils.skill_handler import SkillHandler
 from muddery.utils.loot_handler import LootHandler
 from muddery.worlddata.data_sets import DATA_SETS
 from muddery.utils.builder import delete_object
-from muddery.utils.attributes_info_handler import CHARACTER_ATTRIBUTES_INFO
 from muddery.utils.localized_strings_handler import _
 
 
@@ -58,7 +57,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
     # initialize loot handler in a lazy fashion
     @lazy_property
     def loot_handler(self):
-        return LootHandler(self, DATA_SETS.character_loot_list.model)
+        return LootHandler(self, DATA_SETS.character_loot_list)
 
     def at_object_creation(self):
         """
@@ -148,7 +147,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
         self.db.position_names = {}
 
         # reset equipment's position
-        for record in DATA_SETS.equipment_positions.objects.all():
+        for record in DATA_SETS.equipment_positions.all():
             positions.append(record.key)
             self.db.position_names[record.key] = record.name
 
@@ -192,7 +191,6 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
         """
         # load level data
         self.load_model_data()
-        self.load_custom_attributes(CHARACTER_ATTRIBUTES_INFO)
         
         # load equips
         self.ues_equipments()
@@ -210,7 +208,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
 
         try:
             # get data from db
-            model_data = DATA_SETS.character_models.objects.get(key=model_name, level=self.db.level)
+            model_data = DATA_SETS.character_models.get(key=model_name, level=self.db.level)
 
             reserved_fields = {"id", "key", "name", "level"}
             for field in model_data._meta.fields:
@@ -272,7 +270,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
             model_name = self.get_data_key()
 
         # default skills
-        skill_records = DATA_SETS.default_skills.objects.filter(character=model_name)
+        skill_records = DATA_SETS.default_skills.filter(character=model_name)
 
         default_skill_ids = set([record.skill for record in skill_records])
 

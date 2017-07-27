@@ -1,7 +1,6 @@
 
 from django.contrib.admin.forms import forms
 from muddery.utils.localiztion_handler import localize_form_fields
-from muddery.utils.attributes_info_handler import CHARACTER_ATTRIBUTES_INFO, EQUIPMENT_ATTRIBUTES_INFO, FOOD_ATTRIBUTES_INFO
 from muddery.worlddata.data_sets import DATA_SETS
 
 
@@ -10,16 +9,16 @@ def get_all_pocketable_objects():
     Get all objects that can be put in player's pockets.
     """
     # available objects are common objects, foods skill books or equipments
-    objects = DATA_SETS.common_objects.objects.all()
+    objects = DATA_SETS.common_objects.all()
     choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
 
-    foods = DATA_SETS.foods.objects.all()
+    foods = DATA_SETS.foods.all()
     choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in foods])
 
-    skill_books = DATA_SETS.skill_books.objects.all()
+    skill_books = DATA_SETS.skill_books.all()
     choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in skill_books])
 
-    equipments = DATA_SETS.equipments.objects.all()
+    equipments = DATA_SETS.equipments.all()
     choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in equipments])
 
     return choices
@@ -30,21 +29,21 @@ class GameSettingsForm(forms.ModelForm):
         super(GameSettingsForm, self).__init__(*args, **kwargs)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.world_rooms.objects.all()
+        objects = DATA_SETS.world_rooms.all()
         choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['default_home_key'] = forms.ChoiceField(choices=choices, required=False)
         self.fields['start_location_key'] = forms.ChoiceField(choices=choices, required=False)
         self.fields['default_player_home_key'] = forms.ChoiceField(choices=choices, required=False)
 
         choices = [("", "---------")]
-        objects = DATA_SETS.common_characters.objects.filter(typeclass="CLASS_PLAYER")
+        objects = DATA_SETS.common_characters.filter(typeclass="CLASS_PLAYER")
         choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['default_player_character_key'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.game_settings.model
+        model = DATA_SETS.game_settings._model
         fields = '__all__'
         list_template = "common_list.html"
         form_template = "common_form.html"
@@ -56,7 +55,7 @@ class ClassCategoriesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.class_categories.model
+        model = DATA_SETS.class_categories._model
         fields = '__all__'
         desc = 'Categories of classes.'
         list_template = "common_list.html"
@@ -74,7 +73,7 @@ class TypeclassesForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.typeclasses.model
+        model = DATA_SETS.typeclasses._model
         fields = '__all__'
 
 
@@ -84,7 +83,7 @@ class EquipmentTypesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.equipment_types.model
+        model = DATA_SETS.equipment_types._model
         fields = '__all__'
 
 
@@ -94,7 +93,7 @@ class EquipmentPositionsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.equipment_positions.model
+        model = DATA_SETS.equipment_positions._model
         fields = '__all__'
 
 
@@ -104,7 +103,7 @@ class CharacterCareersForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.character_careers.model
+        model = DATA_SETS.character_careers._model
         fields = '__all__'
 
 
@@ -114,7 +113,7 @@ class QuestObjectiveTypesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.quest_objective_types.model
+        model = DATA_SETS.quest_objective_types._model
         fields = '__all__'
 
 
@@ -124,7 +123,7 @@ class EventTypesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.event_types.model
+        model = DATA_SETS.event_types._model
         fields = '__all__'
 
 
@@ -134,7 +133,7 @@ class EventTriggerTypes(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.event_trigger_types.model
+        model = DATA_SETS.event_trigger_types._model
         fields = '__all__'
 
 
@@ -144,7 +143,7 @@ class QuestDependencyTypesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.quest_dependency_types.model
+        model = DATA_SETS.quest_dependency_types._model
         fields = '__all__'
 
 
@@ -164,7 +163,7 @@ class WorldAreasForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.world_areas.model
+        model = DATA_SETS.world_areas._model
         fields = '__all__'
         
     
@@ -194,7 +193,7 @@ class WorldRoomsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.world_rooms.model
+        model = DATA_SETS.world_rooms._model
         fields = '__all__'
 
 
@@ -214,10 +213,11 @@ class WorldExitsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.world_exits.model
+        model = DATA_SETS.world_exits._model
         fields = '__all__'
 
 
+"""
 class ExitLocksForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExitLocksForm, self).__init__(*args, **kwargs)
@@ -229,8 +229,9 @@ class ExitLocksForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.exit_locks.model
+        model = DATA_SETS.exit_locks._model
         fields = '__all__'
+"""
 
 
 class TwoWayExitsForm(forms.ModelForm):
@@ -244,7 +245,7 @@ class TwoWayExitsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.two_way_exits.model
+        model = DATA_SETS.two_way_exits._model
         fields = '__all__'
 
 
@@ -270,7 +271,7 @@ class WorldObjectsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.world_objects.model
+        model = DATA_SETS.world_objects._model
         fields = '__all__'
 
 
@@ -304,7 +305,7 @@ class WorldNPCsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.world_npcs.model
+        model = DATA_SETS.world_npcs._model
         fields = '__all__'
 
 
@@ -319,7 +320,7 @@ class ObjectCreatorsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.object_creators.model
+        model = DATA_SETS.object_creators._model
         fields = '__all__'
 
 
@@ -345,7 +346,7 @@ class CreatorLootListForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.creator_loot_list.model
+        model = DATA_SETS.creator_loot_list._model
         fields = '__all__'
 
 
@@ -375,7 +376,7 @@ class CharacterLootListForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.character_loot_list.model
+        model = DATA_SETS.character_loot_list._model
         fields = '__all__'
 
 
@@ -401,7 +402,7 @@ class QuestRewardListForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.quest_reward_list.model
+        model = DATA_SETS.quest_reward_list._model
         fields = '__all__'
 
 
@@ -421,7 +422,7 @@ class CommonObjectsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.common_objects.model
+        model = DATA_SETS.common_objects._model
         fields = '__all__'
 
 
@@ -439,10 +440,10 @@ class FoodsForm(forms.ModelForm):
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
-        FOOD_ATTRIBUTES_INFO.set_form_fields(self)
+        # FOOD_ATTRIBUTES_INFO.set_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.foods.model
+        model = DATA_SETS.foods._model
         fields = '__all__'
         
 
@@ -468,43 +469,7 @@ class SkillBooksForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.skill_books.model
-        fields = '__all__'
-
-
-class CharacterAttributesForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(CharacterAttributesForm, self).__init__(*args, **kwargs)
-        self.fields['field'].disabled = True;
-        
-        localize_form_fields(self)
-
-    class Meta:
-        model = DATA_SETS.character_attributes_info.model
-        fields = '__all__'
-
-
-class EquipmentAttributesForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(EquipmentAttributesForm, self).__init__(*args, **kwargs)
-        self.fields['field'].disabled = True;
-        
-        localize_form_fields(self)
-
-    class Meta:
-        model = DATA_SETS.equipment_attributes_info.model
-        fields = '__all__'
-
-
-class FoodAttributesForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(FoodAttributesForm, self).__init__(*args, **kwargs)
-        self.fields['field'].disabled = True;
-        
-        localize_form_fields(self)
-
-    class Meta:
-        model = DATA_SETS.food_attributes_info.model
+        model = DATA_SETS.skill_books._model
         fields = '__all__'
 
 
@@ -512,10 +477,10 @@ class CharacterModelsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CharacterModelsForm, self).__init__(*args, **kwargs)
         localize_form_fields(self)
-        CHARACTER_ATTRIBUTES_INFO.set_form_fields(self)
+        # CHARACTER_ATTRIBUTES_INFO.set_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.character_models.model
+        model = DATA_SETS.character_models._model
         fields = '__all__'
 
 
@@ -542,7 +507,7 @@ class CommonCharacterForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.common_characters.model
+        model = DATA_SETS.common_characters._model
         fields = '__all__'
 
 
@@ -562,7 +527,7 @@ class DefaultObjectsForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.default_objects.model
+        model = DATA_SETS.default_objects._model
         fields = '__all__'
 
 
@@ -582,7 +547,7 @@ class ShopsForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.shops.model
+        model = DATA_SETS.shops._model
         fields = '__all__'
 
 
@@ -612,7 +577,7 @@ class ShopGoodsForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.shop_goods.model
+        model = DATA_SETS.shop_goods._model
         fields = '__all__'
 
 
@@ -633,7 +598,7 @@ class NPCShopsForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.npc_shops.model
+        model = DATA_SETS.npc_shops._model
         fields = '__all__'
 
 
@@ -653,7 +618,7 @@ class SkillsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.skills.model
+        model = DATA_SETS.skills._model
         fields = '__all__'
 
 
@@ -673,7 +638,7 @@ class DefaultSkillsForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.default_skills.model
+        model = DATA_SETS.default_skills._model
         fields = '__all__'
 
 
@@ -693,7 +658,7 @@ class NPCDialoguesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.npc_dialogues.model
+        model = DATA_SETS.npc_dialogues._model
         fields = '__all__'
 
 
@@ -708,7 +673,7 @@ class QuestsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.quests.model
+        model = DATA_SETS.quests._model
         fields = '__all__'
 
 
@@ -727,7 +692,7 @@ class QuestObjectivesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.quest_objectives.model
+        model = DATA_SETS.quest_objectives._model
         fields = '__all__'
 
 
@@ -747,7 +712,7 @@ class QuestDependenciesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.quest_dependencies.model
+        model = DATA_SETS.quest_dependencies._model
         fields = '__all__'
 
 
@@ -770,7 +735,7 @@ class DialogueQuestDependenciesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.dialogue_quest_dependencies.model
+        model = DATA_SETS.dialogue_quest_dependencies._model
         fields = '__all__'
 
 
@@ -796,10 +761,10 @@ class EquipmentsForm(forms.ModelForm):
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
         
         localize_form_fields(self)
-        EQUIPMENT_ATTRIBUTES_INFO.set_form_fields(self)
+        # EQUIPMENT_ATTRIBUTES_INFO.set_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.equipments.model
+        model = DATA_SETS.equipments._model
         fields = '__all__'
 
 
@@ -818,7 +783,7 @@ class CareerEquipmentsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.career_equipments.model
+        model = DATA_SETS.career_equipments._model
         fields = '__all__'
 
 
@@ -837,7 +802,7 @@ class EventDataForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.event_data.model
+        model = DATA_SETS.event_data._model
         fields = '__all__'
 
 
@@ -856,7 +821,7 @@ class EventAttacksForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.event_attacks.model
+        model = DATA_SETS.event_attacks._model
         fields = '__all__'
 
 
@@ -881,7 +846,7 @@ class EventDialoguesForm(forms.ModelForm):
         localize_form_fields(self)
         
     class Meta:
-        model = DATA_SETS.event_dialogues.model
+        model = DATA_SETS.event_dialogues._model
         fields = '__all__'
 
 
@@ -891,7 +856,7 @@ class DialoguesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.dialogues.model
+        model = DATA_SETS.dialogues._model
         fields = '__all__'
 
 
@@ -907,7 +872,7 @@ class DialogueRelationsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.dialogue_relations.model
+        model = DATA_SETS.dialogue_relations._model
         fields = '__all__'
 
 
@@ -934,7 +899,7 @@ class DialogueSentencesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.dialogue_sentences.model
+        model = DATA_SETS.dialogue_sentences._model
         fields = '__all__'
 
 
@@ -944,7 +909,7 @@ class LocalizedStringsForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.localized_strings.model
+        model = DATA_SETS.localized_strings._model
         fields = '__all__'
 
 
@@ -954,7 +919,7 @@ class ImageResourcesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.image_resources.model
+        model = DATA_SETS.image_resources._model
         fields = ('key', 'name', 'resource',)
 
 
@@ -964,5 +929,5 @@ class IconResourcesForm(forms.ModelForm):
         localize_form_fields(self)
 
     class Meta:
-        model = DATA_SETS.icon_resources.model
+        model = DATA_SETS.icon_resources._model
         fields = ('key', 'name', 'resource',)

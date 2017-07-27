@@ -115,6 +115,6 @@ class AttributesInfoHandler(object):
 
 
 # character attribute handler
-CHARACTER_ATTRIBUTES_INFO = AttributesInfoHandler(DATA_SETS.character_models, DATA_SETS.character_attributes_info)
-EQUIPMENT_ATTRIBUTES_INFO = AttributesInfoHandler(DATA_SETS.equipments, DATA_SETS.equipment_attributes_info)
-FOOD_ATTRIBUTES_INFO = AttributesInfoHandler(DATA_SETS.foods, DATA_SETS.food_attributes_info)
+#CHARACTER_ATTRIBUTES_INFO = AttributesInfoHandler(DATA_SETS.character_models, DATA_SETS.character_attributes_info)
+#EQUIPMENT_ATTRIBUTES_INFO = AttributesInfoHandler(DATA_SETS.equipments, DATA_SETS.equipment_attributes_info)
+#FOOD_ATTRIBUTES_INFO = AttributesInfoHandler(DATA_SETS.foods, DATA_SETS.food_attributes_info)

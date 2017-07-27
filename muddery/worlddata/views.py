@@ -59,8 +59,10 @@ def world_editor(request):
     """
     Render the world editor.
     """
-    data_handlers = DATA_SETS.all_handlers
-    models = [{"key": data_handler.model_name, "name": _(data_handler.model_name, category="models") + "(" + data_handler.model_name + ")"} for data_handler in data_handlers]
+    data_handlers = DATA_SETS.file_data_handlers
+    models = [{"key": data_handler.model_name(),
+               "name": _(data_handler.model_name(), category="models")
+                       + "(" + data_handler.model_name() + ")"} for data_handler in data_handlers]
 
     context = {"models": models,
                "writers": writers.get_writers()}

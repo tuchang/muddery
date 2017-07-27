@@ -11,13 +11,13 @@ class GameSettings(object):
     """
     Handles a character's custom attributes.
     """
-    def __init__(self, objects, default_values):
+    def __init__(self, data_handler, default_values):
         """
         Initialize handler.
         """
         self.values = {}
         self.default_values = default_values
-        self.objects = objects
+        self.data_handler = data_handler
         self.reset()
 
     def reset(self):
@@ -30,7 +30,7 @@ class GameSettings(object):
 
         # Get db model
         try:
-            query = self.objects.all()
+            query = self.data_handler.all()
             if len(query) > 0:
                 record = query[0]
                 # Add db fields to dict.
@@ -79,7 +79,7 @@ class GameSettings(object):
         return client_settings
 
 
-GAME_SETTINGS = GameSettings(DATA_SETS.game_settings.objects,
+GAME_SETTINGS = GameSettings(DATA_SETS.game_settings,
                              {"game_name": "Muddery",
                               "connection_screen": "",
                               "solo_mode": False,

@@ -1,0 +1,9 @@
+key,ctable,cfield,value
+exit_colorfulworld_street_1,exit_locks,unlock_condition,"has_object(""weapon_wood_stick"")"
+exit_colorfulworld_street_1,exit_locks,unlock_verb,用力撬动
+exit_colorfulworld_street_1,exit_locks,locked_desc,通向外面的道路被一块巨大的广告板堵住了，希望能找到合适的工具挪动它。
+exit_colorfulworld_street_1,exit_locks,auto_unlock,0
+exit_colorfulworld_gate_path,exit_locks,unlock_condition,"is_quest_completed(""quest_none"")"
+exit_colorfulworld_gate_path,exit_locks,unlock_verb,
+exit_colorfulworld_gate_path,exit_locks,locked_desc,那里太远了，我就在附近找找看吧。
+exit_colorfulworld_gate_path,exit_locks,auto_unlock,1

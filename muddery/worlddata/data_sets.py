@@ -4,7 +4,10 @@ This module defines available model types.
 
 from django.conf import settings
 from evennia.utils.utils import class_from_module
-from muddery.worlddata.data_handler import DataHandler, SystemDataHandler, LocalizedStringsHandler
+from muddery.worlddata.data_handler.data_handler import DataHandler
+from muddery.worlddata.data_handler.file_data_handler import FileDataHandler
+from muddery.worlddata.data_handler.system_data_handler import SystemDataHandler
+from muddery.worlddata.data_handler.localized_strings_handler import LocalizedStringsHandler
 
 
 class DataSets(object):
@@ -34,33 +37,37 @@ class DataSets(object):
                             self.localized_strings]
 
         # Basic settings
-        self.equipment_types = DataHandler("equipment_types")
-        self.equipment_positions = DataHandler("equipment_positions")
-        self.character_careers = DataHandler("character_careers")
-        self.career_equipments = DataHandler("career_equipments")
-        self.character_models = DataHandler("character_models")
-
+        self.equipment_types = FileDataHandler("equipment_types")
+        self.equipment_positions = FileDataHandler("equipment_positions")
+        self.character_careers = FileDataHandler("character_careers")
+        self.career_equipments = FileDataHandler("career_equipments")
+        self.character_models = FileDataHandler("character_models")
+        self.custom_tables = FileDataHandler("custom_tables")
+        self.custom_fields = FileDataHandler("custom_fields")
+        
         self.basic_data = [self.equipment_types,
                            self.equipment_positions,
                            self.character_careers,
                            self.career_equipments,
-                           self.character_models]
+                           self.character_models,
+                           self.custom_tables,
+                           self.custom_fields]
 
         # Objects data
-        self.world_areas = DataHandler("world_areas")
-        self.world_rooms = DataHandler("world_rooms")
-        self.world_exits = DataHandler("world_exits")
-        self.world_objects = DataHandler("world_objects")
-        self.world_npcs = DataHandler("world_npcs")
-        self.common_objects = DataHandler("common_objects")
-        self.common_characters = DataHandler("common_characters")
-        self.skills = DataHandler("skills")
-        self.quests = DataHandler("quests")
-        self.equipments = DataHandler("equipments")
-        self.foods = DataHandler("foods")
-        self.skill_books = DataHandler("skill_books")
-        self.shops = DataHandler("shops")
-        self.shop_goods = DataHandler("shop_goods")
+        self.world_areas = FileDataHandler("world_areas")
+        self.world_rooms = FileDataHandler("world_rooms")
+        self.world_exits = FileDataHandler("world_exits")
+        self.world_objects = FileDataHandler("world_objects")
+        self.world_npcs = FileDataHandler("world_npcs")
+        self.common_objects = FileDataHandler("common_objects")
+        self.common_characters = FileDataHandler("common_characters")
+        self.skills = FileDataHandler("skills")
+        self.quests = FileDataHandler("quests")
+        self.equipments = FileDataHandler("equipments")
+        self.foods = FileDataHandler("foods")
+        self.skill_books = FileDataHandler("skill_books")
+        self.shops = FileDataHandler("shops")
+        self.shop_goods = FileDataHandler("shop_goods")
 
         self.object_data = [self.world_areas,
                             self.world_rooms,
@@ -78,40 +85,33 @@ class DataSets(object):
                             self.shop_goods]
 
         # Object additional data
-        self.exit_locks = DataHandler("exit_locks")
-        self.two_way_exits = DataHandler("two_way_exits")
-        self.object_creators = DataHandler("object_creators")
+        # self.exit_locks = FileDataHandler("exit_locks")
+        self.two_way_exits = FileDataHandler("two_way_exits")
+        self.object_creators = FileDataHandler("object_creators")
         
-        self.object_additional_data = [self.exit_locks,
-                                       self.two_way_exits,
+        self.object_additional_data = [self.two_way_exits,
                                        self.object_creators]
 
         # Other data
-        self.game_settings = DataHandler("game_settings")
-        self.character_attributes_info = DataHandler("character_attributes_info")
-        self.equipment_attributes_info = DataHandler("equipment_attributes_info")
-        self.food_attributes_info = DataHandler("food_attributes_info")
-        self.creator_loot_list = DataHandler("creator_loot_list")
-        self.character_loot_list = DataHandler("character_loot_list")
-        self.quest_reward_list = DataHandler("quest_reward_list")
-        self.quest_objectives = DataHandler("quest_objectives")
-        self.quest_dependencies = DataHandler("quest_dependencies")
-        self.event_data = DataHandler("event_data")
-        self.dialogues = DataHandler("dialogues")
-        self.dialogue_sentences = DataHandler("dialogue_sentences")
-        self.dialogue_relations = DataHandler("dialogue_relations")
-        self.npc_dialogues = DataHandler("npc_dialogues")
-        self.dialogue_quest_dependencies = DataHandler("dialogue_quest_dependencies")
-        self.default_objects = DataHandler("default_objects")
-        self.default_skills = DataHandler("default_skills")
-        self.npc_shops = DataHandler("npc_shops")
-        self.image_resources = DataHandler("image_resources")
-        self.icon_resources = DataHandler("icon_resources")
+        self.game_settings = FileDataHandler("game_settings")
+        self.creator_loot_list = FileDataHandler("creator_loot_list")
+        self.character_loot_list = FileDataHandler("character_loot_list")
+        self.quest_reward_list = FileDataHandler("quest_reward_list")
+        self.quest_objectives = FileDataHandler("quest_objectives")
+        self.quest_dependencies = FileDataHandler("quest_dependencies")
+        self.event_data = FileDataHandler("event_data")
+        self.dialogues = FileDataHandler("dialogues")
+        self.dialogue_sentences = FileDataHandler("dialogue_sentences")
+        self.dialogue_relations = FileDataHandler("dialogue_relations")
+        self.npc_dialogues = FileDataHandler("npc_dialogues")
+        self.dialogue_quest_dependencies = FileDataHandler("dialogue_quest_dependencies")
+        self.default_objects = FileDataHandler("default_objects")
+        self.default_skills = FileDataHandler("default_skills")
+        self.npc_shops = FileDataHandler("npc_shops")
+        self.image_resources = FileDataHandler("image_resources")
+        self.icon_resources = FileDataHandler("icon_resources")
 
         self.other_data = [self.game_settings,
-                           self.character_attributes_info,
-                           self.equipment_attributes_info,
-                           self.food_attributes_info,
                            self.creator_loot_list,
                            self.character_loot_list,
                            self.quest_reward_list,
@@ -131,14 +131,17 @@ class DataSets(object):
                            self.icon_resources]
 
         # Event additional data
-        self.event_attacks = DataHandler("event_attacks")
-        self.event_dialogues = DataHandler("event_dialogues")
+        self.event_attacks = FileDataHandler("event_attacks")
+        self.event_dialogues = FileDataHandler("event_dialogues")
 
         self.event_additional_data = [self.event_attacks,
                                       self.event_dialogues]
+                                      
+        # Custom data
+        self.custom_records = DataHandler("custom_records")
 
-        # all data handlers
-        self.all_handlers = []
+        # all file data handlers
+        self.file_data_handlers = []
         
         # data handler dict
         self.handler_dict = {}
@@ -151,25 +154,26 @@ class DataSets(object):
 
     def update_data_sets(self):
         # all data handlers
-        self.all_handlers = []
-        self.all_handlers.extend(self.system_data)
-        self.all_handlers.extend(self.basic_data)
-        self.all_handlers.extend(self.object_data)
-        self.all_handlers.extend(self.object_additional_data)
-        self.all_handlers.extend(self.other_data)
-        self.all_handlers.extend(self.event_additional_data)
+        self.file_data_handlers = []
+        self.file_data_handlers.extend(self.system_data)
+        self.file_data_handlers.extend(self.basic_data)
+        self.file_data_handlers.extend(self.object_data)
+        self.file_data_handlers.extend(self.object_additional_data)
+        self.file_data_handlers.extend(self.other_data)
+        self.file_data_handlers.extend(self.event_additional_data)
         
         # data handler dict
         self.handler_dict = {}
-        for data_handler in self.all_handlers:
-            self.handler_dict[data_handler.model_name] = data_handler
+        for data_handler in self.file_data_handlers:
+            self.handler_dict[data_handler.model_name()] = data_handler
+            
+        # add custom data handler
 
     def add_data_handler(self, group, data_handler):
         if group:
             group.append(data_handler)
-        
-        self.all_handlers.append(data_handler)
-        self.handler_dict[data_handler.model_name] = data_handler
+
+        self.handler_dict[data_handler.model_name()] = data_handler
 
     def get_handler(self, model_name):
         """

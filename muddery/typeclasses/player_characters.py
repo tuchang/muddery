@@ -25,7 +25,6 @@ from muddery.utils.localized_strings_handler import _
 from muddery.utils.game_settings import GAME_SETTINGS
 from muddery.utils.dialogue_handler import DIALOGUE_HANDLER
 from muddery.worlddata.data_sets import DATA_SETS
-from muddery.utils.attributes_info_handler import CHARACTER_ATTRIBUTES_INFO
 from evennia.utils.utils import lazy_property
 from evennia.utils import logger
 from evennia.comms.models import ChannelDB
@@ -86,7 +85,7 @@ class MudderyPlayerCharacter(MudderyCharacter):
         if not self.attributes.has("career"):
             self.db.career = ""
             try:
-                careers = DATA_SETS.character_careers.objects.all()
+                careers = DATA_SETS.character_careers.all()
                 if careers:
                     career = random.choice(careers)
                     self.db.career = career.key
@@ -389,7 +388,7 @@ class MudderyPlayerCharacter(MudderyCharacter):
             model_name = self.get_data_key()
         
         # default objects
-        object_records = DATA_SETS.default_objects.objects.filter(character=model_name)
+        object_records = DATA_SETS.default_objects.filter(character=model_name)
 
         default_object_ids = set([record.object for record in object_records])
 
@@ -782,6 +781,7 @@ class MudderyPlayerCharacter(MudderyCharacter):
                          "value": self.db.hp,
                          "order": 4}}
 
+        """
         order = 5
         for value in CHARACTER_ATTRIBUTES_INFO.all_values():
             status[value["key"]] = {"key": value["key"],
@@ -789,7 +789,8 @@ class MudderyPlayerCharacter(MudderyCharacter):
                                     "value": getattr(self.cattr, value["key"]),
                                     "order": order}
             order += 1
-
+        """
+        
         return status
 
     def show_equipments(self):

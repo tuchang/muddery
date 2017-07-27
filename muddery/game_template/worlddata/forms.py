@@ -44,9 +44,6 @@ class WorldRoomsForm(forms_base.WorldRoomsForm):
 class WorldExitsForm(forms_base.WorldExitsForm):
     pass
 
-class ExitLocksForm(forms_base.ExitLocksForm):
-    pass
-
 class TwoWayExitsForm(forms_base.TwoWayExitsForm):
     pass
 
@@ -75,15 +72,6 @@ class FoodsForm(forms_base.FoodsForm):
     pass
 
 class SkillBooksForm(forms_base.SkillBooksForm):
-    pass
-
-class CharacterAttributesForm(forms_base.CharacterAttributesForm):
-    pass
-
-class EquipmentAttributesForm(forms_base.EquipmentAttributesForm):
-    pass
-
-class FoodAttributesForm(forms_base.FoodAttributesForm):
     pass
 
 class CharacterModelsForm(forms_base.CharacterModelsForm):

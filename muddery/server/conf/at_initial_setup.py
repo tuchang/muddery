@@ -105,7 +105,7 @@ def import_local_data():
     custom_data_path = os.path.join(settings.GAME_DIR, settings.WORLD_DATA_FOLDER)
 
     # load all custom data
-    for data_handlers in DATA_SETS.all_handlers:
+    for data_handlers in DATA_SETS.file_data_handlers:
         try:
             data_handlers.import_from_path(custom_data_path, system_data=False)
         except Exception, e:
