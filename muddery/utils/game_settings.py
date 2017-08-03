@@ -79,7 +79,7 @@ class GameSettings(object):
         return client_settings
 
 
-GAME_SETTINGS = GameSettings(DATA_SETS.game_settings,
+GAME_SETTINGS = GameSettings(DATA_SETS.data("game_settings"),
                              {"game_name": "Muddery",
                               "connection_screen": "",
                               "solo_mode": False,

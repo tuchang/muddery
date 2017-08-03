@@ -57,7 +57,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
     # initialize loot handler in a lazy fashion
     @lazy_property
     def loot_handler(self):
-        return LootHandler(self, DATA_SETS.character_loot_list)
+        return LootHandler(self, DATA_SETS.data("character_loot_list"))
 
     def at_object_creation(self):
         """
@@ -147,7 +147,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
         self.db.position_names = {}
 
         # reset equipment's position
-        for record in DATA_SETS.equipment_positions.all():
+        for record in DATA_SETS.data("equipment_positions").all():
             positions.append(record.key)
             self.db.position_names[record.key] = record.name
 
@@ -208,7 +208,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
 
         try:
             # get data from db
-            model_data = DATA_SETS.character_models.get(key=model_name, level=self.db.level)
+            model_data = DATA_SETS.data("character_models").get(key=model_name, level=self.db.level)
 
             reserved_fields = {"id", "key", "name", "level"}
             for field in model_data._meta.fields:
@@ -270,7 +270,7 @@ class MudderyCharacter(MudderyObject, DefaultCharacter):
             model_name = self.get_data_key()
 
         # default skills
-        skill_records = DATA_SETS.default_skills.filter(character=model_name)
+        skill_records = DATA_SETS.data("default_skills").filter(character=model_name)
 
         default_skill_ids = set([record.skill for record in skill_records])
 

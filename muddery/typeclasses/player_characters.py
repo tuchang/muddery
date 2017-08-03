@@ -85,7 +85,7 @@ class MudderyPlayerCharacter(MudderyCharacter):
         if not self.attributes.has("career"):
             self.db.career = ""
             try:
-                careers = DATA_SETS.character_careers.all()
+                careers = DATA_SETS.data("character_careers").all()
                 if careers:
                     career = random.choice(careers)
                     self.db.career = career.key
@@ -388,7 +388,7 @@ class MudderyPlayerCharacter(MudderyCharacter):
             model_name = self.get_data_key()
         
         # default objects
-        object_records = DATA_SETS.default_objects.filter(character=model_name)
+        object_records = DATA_SETS.data("default_objects").filter(character=model_name)
 
         default_object_ids = set([record.object for record in object_records])
 

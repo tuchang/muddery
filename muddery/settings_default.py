@@ -363,9 +363,18 @@ LOCALIZED_STRINGS_FOLDER = "languages"
 # World data sets
 DATA_SETS = "muddery.worlddata.data_sets.DataSets"
 
+
 ###################################
 # world editor
 ###################################
 DEFUALT_LIST_TEMPLATE = "common_list.html"
 
 DEFUALT_FORM_TEMPLATE = "common_form.html"
+
+
+###################################
+# muddery's plugins
+###################################
+
+MUDDERY_PLUGINS_DIR = "plugins"
+MUDDERY_PLUGINS_PATH = os.path.join(GAME_DIR, MUDDERY_PLUGINS_DIR)

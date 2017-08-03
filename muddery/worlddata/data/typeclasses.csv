@@ -15,5 +15,3 @@ CLASS_SKILL_BOOK,Skill Book,muddery.typeclasses.common_objects.MudderySkillBook,
 CLASS_SKILL,Skill,muddery.typeclasses.character_skills.MudderySkill,CATE_SKILL,Character's skill.
 CLASS_QUEST,Quest,muddery.typeclasses.character_quests.MudderyQuest,CATE_QUEST,Quest.
 CLASS_EQUIPMENT,Equipment,muddery.typeclasses.common_objects.MudderyEquipment,CATE_OBJECT,Equipments.
-CLASS_SHOP,Shop,muddery.typeclasses.shops.MudderyShop,CATE_SHOP,Shops.
-CLASS_SHOP_GOODS,Goods,muddery.typeclasses.shop_goods.MudderyShopGoods,CATE_SHOP_GOODS,Goods

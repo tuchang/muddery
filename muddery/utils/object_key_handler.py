@@ -29,8 +29,8 @@ class ObjectKeyHandler(object):
 
         # Get model names.
         data_settings_list = []
-        data_settings_list.extend(DATA_SETS.object_data)
-        data_settings_list.extend(DATA_SETS.object_additional_data)
+        data_settings_list.extend(DATA_SETS.group("object_data"))
+        data_settings_list.extend(DATA_SETS.group("additional_data"))
         for data_settings in data_settings_list:
             try:
                 for record in data_settings.all():

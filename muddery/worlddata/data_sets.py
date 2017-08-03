@@ -19,170 +19,117 @@ class DataSets(object):
         Returns:
             None.
         """
-        # System settings
-        self.class_categories = SystemDataHandler("class_categories")
-        self.typeclasses = SystemDataHandler("typeclasses")
-        self.event_types = SystemDataHandler("event_types")
-        self.event_trigger_types = SystemDataHandler("event_trigger_types")
-        self.quest_objective_types = SystemDataHandler("quest_objective_types")
-        self.quest_dependency_types = SystemDataHandler("quest_dependency_types")
-        self.localized_strings = LocalizedStringsHandler("localized_strings")
-
-        self.system_data = [self.class_categories,
-                            self.typeclasses,
-                            self.event_types,
-                            self.event_trigger_types,
-                            self.quest_objective_types,
-                            self.quest_dependency_types,
-                            self.localized_strings]
-
-        # Basic settings
-        self.equipment_types = FileDataHandler("equipment_types")
-        self.equipment_positions = FileDataHandler("equipment_positions")
-        self.character_careers = FileDataHandler("character_careers")
-        self.career_equipments = FileDataHandler("career_equipments")
-        self.character_models = FileDataHandler("character_models")
-        self.custom_tables = FileDataHandler("custom_tables")
-        self.custom_fields = FileDataHandler("custom_fields")
+        # initial containers
+        self._handler_dict = {}
+        self._groups = {}
         
-        self.basic_data = [self.equipment_types,
-                           self.equipment_positions,
-                           self.character_careers,
-                           self.career_equipments,
-                           self.character_models,
-                           self.custom_tables,
-                           self.custom_fields]
+        # load world data
+        self.load_worlddata()
 
-        # Objects data
-        self.world_areas = FileDataHandler("world_areas")
-        self.world_rooms = FileDataHandler("world_rooms")
-        self.world_exits = FileDataHandler("world_exits")
-        self.world_objects = FileDataHandler("world_objects")
-        self.world_npcs = FileDataHandler("world_npcs")
-        self.common_objects = FileDataHandler("common_objects")
-        self.common_characters = FileDataHandler("common_characters")
-        self.skills = FileDataHandler("skills")
-        self.quests = FileDataHandler("quests")
-        self.equipments = FileDataHandler("equipments")
-        self.foods = FileDataHandler("foods")
-        self.skill_books = FileDataHandler("skill_books")
-        self.shops = FileDataHandler("shops")
-        self.shop_goods = FileDataHandler("shop_goods")
-
-        self.object_data = [self.world_areas,
-                            self.world_rooms,
-                            self.world_exits,
-                            self.world_objects,
-                            self.world_npcs,
-                            self.common_objects,
-                            self.common_characters,
-                            self.skills,
-                            self.quests,
-                            self.equipments,
-                            self.foods,
-                            self.skill_books,
-                            self.shops,
-                            self.shop_goods]
-
-        # Object additional data
-        # self.exit_locks = FileDataHandler("exit_locks")
-        self.two_way_exits = FileDataHandler("two_way_exits")
-        self.object_creators = FileDataHandler("object_creators")
-        
-        self.object_additional_data = [self.two_way_exits,
-                                       self.object_creators]
-
-        # Other data
-        self.game_settings = FileDataHandler("game_settings")
-        self.creator_loot_list = FileDataHandler("creator_loot_list")
-        self.character_loot_list = FileDataHandler("character_loot_list")
-        self.quest_reward_list = FileDataHandler("quest_reward_list")
-        self.quest_objectives = FileDataHandler("quest_objectives")
-        self.quest_dependencies = FileDataHandler("quest_dependencies")
-        self.event_data = FileDataHandler("event_data")
-        self.dialogues = FileDataHandler("dialogues")
-        self.dialogue_sentences = FileDataHandler("dialogue_sentences")
-        self.dialogue_relations = FileDataHandler("dialogue_relations")
-        self.npc_dialogues = FileDataHandler("npc_dialogues")
-        self.dialogue_quest_dependencies = FileDataHandler("dialogue_quest_dependencies")
-        self.default_objects = FileDataHandler("default_objects")
-        self.default_skills = FileDataHandler("default_skills")
-        self.npc_shops = FileDataHandler("npc_shops")
-        self.image_resources = FileDataHandler("image_resources")
-        self.icon_resources = FileDataHandler("icon_resources")
-
-        self.other_data = [self.game_settings,
-                           self.creator_loot_list,
-                           self.character_loot_list,
-                           self.quest_reward_list,
-                           self.quest_objectives,
-                           self.quest_dependencies,
-                           self.event_data,
-                           self.dialogues,
-                           self.dialogue_sentences,
-                           self.dialogue_relations,
-                           self.npc_dialogues,
-                           self.dialogue_quest_dependencies,
-                           self.default_objects,
-                           self.default_skills,
-                           self.shop_goods,
-                           self.npc_shops,
-                           self.image_resources,
-                           self.icon_resources]
-
-        # Event additional data
-        self.event_attacks = FileDataHandler("event_attacks")
-        self.event_dialogues = FileDataHandler("event_dialogues")
-
-        self.event_additional_data = [self.event_attacks,
-                                      self.event_dialogues]
-                                      
-        # Custom data
-        self.custom_records = DataHandler("custom_records")
-
-        # all file data handlers
-        self.file_data_handlers = []
-        
-        # data handler dict
-        self.handler_dict = {}
-
-        # update data dict after hook
-        self.update_data_sets()
-        
         # call creation hook
         self.at_creation()
 
-    def update_data_sets(self):
-        # all data handlers
-        self.file_data_handlers = []
-        self.file_data_handlers.extend(self.system_data)
-        self.file_data_handlers.extend(self.basic_data)
-        self.file_data_handlers.extend(self.object_data)
-        self.file_data_handlers.extend(self.object_additional_data)
-        self.file_data_handlers.extend(self.other_data)
-        self.file_data_handlers.extend(self.event_additional_data)
-        
-        # data handler dict
-        self.handler_dict = {}
-        for data_handler in self.file_data_handlers:
-            self.handler_dict[data_handler.model_name()] = data_handler
-            
-        # add custom data handler
+    def add(self, data_handler, groups=None):
+        """
+        Add a new handler to data set.
+        """
+        key = (data_handler.app_name(), data_handler.model_name(),)
+        self._handler_dict[key] = data_handler
+        for group in groups:
+            if group not in self._groups:
+                # set data handlers by order
+                self._groups[group] = []
+            self._groups[group].append(data_handler)
 
-    def add_data_handler(self, group, data_handler):
-        if group:
-            group.append(data_handler)
-
-        self.handler_dict[data_handler.model_name()] = data_handler
-
-    def get_handler(self, model_name):
+    def data(self, model_name, app_name=None):
         """
         Get a data handler by model name.
         """
-        return self.handler_dict.get(model_name, None)
+        if not app_name:
+            app_name = settings.WORLD_DATA_APP
+        key = (app_name, model_name,)
+        return self._handler_dict.get(key, None)
+        
+    def group(self, group_name):
+        """
+        Get all models in this group.
+        """
+        if group_name not in self._groups:
+            return None
+            
+        return self._groups[group_name]
 
     def at_creation(self):
+        """
+        Called on init.
+        """
         pass
+
+    def load_worlddata(self):
+        """
+        Load world data handlers.
+        """
+        # System settings
+        self.add(SystemDataHandler("class_categories"), ("file_data", "system_data",))
+        self.add(SystemDataHandler("typeclasses"), ("file_data", "system_data", "typeclasses"))
+        self.add(SystemDataHandler("event_types"), ("file_data", "system_data",))
+        self.add(SystemDataHandler("event_trigger_types"), ("file_data", "system_data",))
+        self.add(SystemDataHandler("quest_objective_types"), ("file_data", "system_data",))
+        self.add(SystemDataHandler("quest_dependency_types"), ("file_data", "system_data",))
+        self.add(LocalizedStringsHandler("localized_strings"), ("file_data", "system_data",))
+
+        # Basic settings
+        self.add(FileDataHandler("equipment_types"), ("file_data", "basic_data",))
+        self.add(FileDataHandler("equipment_positions"), ("file_data", "basic_data",))
+        self.add(FileDataHandler("character_careers"), ("file_data", "basic_data",))
+        self.add(FileDataHandler("career_equipments"), ("file_data", "basic_data",))
+        self.add(FileDataHandler("character_models"), ("file_data", "basic_data",))
+        self.add(FileDataHandler("custom_tables"), ("file_data", "basic_data",))
+        self.add(FileDataHandler("custom_fields"), ("file_data", "basic_data",))
+
+        # Objects data
+        self.add(FileDataHandler("world_areas"), ("file_data", "object_data",))
+        self.add(FileDataHandler("world_rooms"), ("file_data", "object_data",))
+        self.add(FileDataHandler("world_exits"), ("file_data", "object_data",))
+        self.add(FileDataHandler("world_objects"), ("file_data", "object_data",))
+        self.add(FileDataHandler("world_npcs"), ("file_data", "object_data",))
+        self.add(FileDataHandler("common_objects"), ("file_data", "object_data",))
+        self.add(FileDataHandler("common_characters"), ("file_data", "object_data",))
+        self.add(FileDataHandler("skills"), ("file_data", "object_data",))
+        self.add(FileDataHandler("quests"), ("file_data", "object_data",))
+        self.add(FileDataHandler("equipments"), ("file_data", "object_data",))
+        self.add(FileDataHandler("foods"), ("file_data", "object_data",))
+        self.add(FileDataHandler("skill_books"), ("file_data", "object_data",))
+        # self.add(FileDataHandler("shops"), ("file_data", "object_data",))
+        # self.add(FileDataHandler("shop_goods"), ("file_data", "object_data",))
+        
+        # Object additional data
+        self.add(FileDataHandler("exit_locks"), ("file_data", "additional_data",))
+        self.add(FileDataHandler("two_way_exits"), ("file_data", "additional_data",))
+        self.add(FileDataHandler("object_creators"), ("file_data", "additional_data",))
+
+        # Other data
+        self.add(FileDataHandler("game_settings"), ("file_data", "other_data",))
+        self.add(FileDataHandler("creator_loot_list"), ("file_data", "other_data",))
+        self.add(FileDataHandler("character_loot_list"), ("file_data", "other_data",))
+        self.add(FileDataHandler("quest_reward_list"), ("file_data", "other_data",))
+        self.add(FileDataHandler("quest_objectives"), ("file_data", "other_data",))
+        self.add(FileDataHandler("quest_dependencies"), ("file_data", "other_data",))
+        self.add(FileDataHandler("event_data"), ("file_data", "other_data",))
+        self.add(FileDataHandler("dialogues"), ("file_data", "other_data",))
+        self.add(FileDataHandler("dialogue_sentences"), ("file_data", "other_data",))
+        self.add(FileDataHandler("dialogue_relations"), ("file_data", "other_data",))
+        self.add(FileDataHandler("npc_dialogues"), ("file_data", "other_data",))
+        self.add(FileDataHandler("dialogue_quest_dependencies"), ("file_data", "other_data",))
+        self.add(FileDataHandler("default_objects"), ("file_data", "other_data",))
+        self.add(FileDataHandler("default_skills"), ("file_data", "other_data",))
+        # self.add(FileDataHandler("npc_shops"), ("file_data", "other_data",))
+        self.add(FileDataHandler("image_resources"), ("file_data", "other_data",))
+        self.add(FileDataHandler("icon_resources"), ("file_data", "other_data",))
+
+        # Event additional data
+        self.add(FileDataHandler("event_attacks"), ("file_data", "event_additional_data",))
+        self.add(FileDataHandler("event_dialogues"), ("file_data", "event_additional_data",))
 
 
 # Data sets

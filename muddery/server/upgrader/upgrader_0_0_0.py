@@ -75,14 +75,14 @@ class Upgrader(BaseUpgrader):
             server_name = utils.get_settings(temp_dir, ["SERVERNAME"])
             if server_name:
                 kwargs = {"game_name": ast.literal_eval(server_name["SERVERNAME"])}
-                DATA_SETS.game_settings.objects.all().update(**kwargs)
+                DATA_SETS.data("game_settings").objects.all().update(**kwargs)
 
             # upgrade system data
             from django.conf import settings
             custom_data_path = os.path.join(game_dir, settings.WORLD_DATA_FOLDER)
             system_data_path = os.path.join(settings.MUDDERY_DIR, settings.WORLD_DATA_FOLDER)
 
-            for data_handler in DATA_SETS.system_data:
+            for data_handler in DATA_SETS.group("system_data"):
                 data_handler.clear_model_data(system_data=False)
                 try:
                     data_handler.import_from_path(custom_data_path, system_data=False)
@@ -96,7 +96,7 @@ class Upgrader(BaseUpgrader):
                     print("Cannot import game data. %s" % e)
 
             # set shop goods' key
-            for data in DATA_SETS.shop_goods.objects.all():
+            for data in DATA_SETS.data("shop_goods").objects.all():
                 data.full_clean()
                 data.save()
 
@@ -123,7 +123,7 @@ class Upgrader(BaseUpgrader):
         print("Upgrading game data 0.0.0-0.2.0 %s." % data_path)
 
         from muddery.worlddata.data_sets import DATA_SETS
-        file_names = glob.glob(os.path.join(data_path, DATA_SETS.typeclasses.model_name + ".*"))
+        file_names = glob.glob(os.path.join(data_path, DATA_SETS.data("typeclasses").model_name + ".*"))
         for file_name in file_names:
             print("Remove file %s." % file_name)
             os.remove(file_name)

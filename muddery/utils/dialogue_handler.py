@@ -58,15 +58,15 @@ class DialogueHandler(object):
         
         # Get db model
         try:
-            dialogue_record = DATA_SETS.dialogues.get(key=dialogue)
+            dialogue_record = DATA_SETS.data("dialogues").get(key=dialogue)
         except Exception, e:
             return
 
-        sentences = DATA_SETS.dialogue_sentences.filter(dialogue=dialogue)
+        sentences = DATA_SETS.data("dialogue_sentences").filter(dialogue=dialogue)
 
-        nexts = DATA_SETS.dialogue_relations.filter(dialogue=dialogue)
+        nexts = DATA_SETS.data("dialogue_relations").filter(dialogue=dialogue)
 
-        dependencies = DATA_SETS.dialogue_quest_dependencies.filter(dialogue=dialogue)
+        dependencies = DATA_SETS.data("dialogue_quest_dependencies").filter(dialogue=dialogue)
 
         # Add db fields to data object.
         data = {}
@@ -375,7 +375,7 @@ class DialogueHandler(object):
         # use icon resource in dialogue sentence
         if icon_str:
             try:
-                resource_info = DATA_SETS.icon_resources.get(key=icon_str)
+                resource_info = DATA_SETS.data("icon_resources").get(key=icon_str)
                 icon = resource_info.resource.name
             except Exception, e:
                 logger.log_errmsg("Load icon %s error: %s" % (icon_str, e))
@@ -479,7 +479,7 @@ class DialogueHandler(object):
         """
         # Get record.
         try:
-            record = DATA_SETS.npc_dialogues.get(dialogue=dialogue)
+            record = DATA_SETS.data("npc_dialogues").get(dialogue=dialogue)
             return record.npc.name
         except Exception, e:
             pass

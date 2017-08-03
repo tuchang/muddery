@@ -18,4 +18,4 @@ class DataSets(BaseDataSets):
             None
         """
         super(DataSets, self).at_creation()
-        # self.add_data_handler(self.object_additional_data, DataHandler("custom_model"))
+        # self.add(DataHandler("custom_model"), ("additional_data",))

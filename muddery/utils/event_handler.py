@@ -22,7 +22,7 @@ def get_event_additional_model():
     additional_model = {}
 
     # list event's additional data's model
-    for data_settings in DATA_SETS.event_additional_data:
+    for data_settings in DATA_SETS.group("event_additional_data"):
         for record in data_settings.all():
             key = record.serializable_value("key")
             additional_model[key] = data_settings.model_name()
@@ -43,7 +43,7 @@ class EventHandler(object):
         self.events = {}
 
         # Load events.
-        event_records = DATA_SETS.event_data.filter(trigger_obj=owner.get_data_key())
+        event_records = DATA_SETS.data("event_data").filter(trigger_obj=owner.get_data_key())
 
         for record in event_records:
             event = {}

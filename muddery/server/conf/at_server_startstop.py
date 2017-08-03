@@ -24,15 +24,24 @@ from muddery.utils.localized_strings_handler import LOCALIZED_STRINGS_HANDLER
 from muddery.utils.game_settings import GAME_SETTINGS
 from muddery.utils import builder
 from muddery.utils.localiztion_handler import localize_model_fields
+from muddery.utils.plugins_handler import PLUGINS_HANDLER
+from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
+
 
 def at_server_start():
     """
     This is called every time the server starts up, regardless of
     how it was shut down.
     """
+    # load plugins
+    PLUGINS_HANDLER.reload()
+
+    # load typeclasses
+    TYPECLASSES_HANDLER.add_group(DATA_SETS.group("typeclasses"))
+        
     # reset settings
     GAME_SETTINGS.reset()
-
+    
     # reload keys
     OBJECT_KEY_HANDLER.reload()
 

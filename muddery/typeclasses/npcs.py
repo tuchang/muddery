@@ -44,14 +44,14 @@ class MudderyNPC(MudderyCharacter):
         self.load_dialogues()
         
         # load shops
-        self.load_shops()
+        # self.load_shops()
 
     def load_dialogues(self):
         """
         Load dialogues.
         """
         npc_key = self.get_data_key()
-        dialogues = DATA_SETS.npc_dialogues.filter(npc=npc_key)
+        dialogues = DATA_SETS.data("npc_dialogues").filter(npc=npc_key)
 
         self.default_dialogues = [dialogue.dialogue for dialogue in dialogues if dialogue.default]
         self.dialogues = [dialogue.dialogue for dialogue in dialogues if not dialogue.default]
@@ -61,7 +61,7 @@ class MudderyNPC(MudderyCharacter):
         Load character's shop.
         """
         # shops records
-        shop_records = DATA_SETS.npc_shops.filter(npc=self.get_data_key())
+        shop_records = DATA_SETS.data("npc_shops").filter(npc=self.get_data_key())
 
         shop_keys = set([record.shop for record in shop_records])
 

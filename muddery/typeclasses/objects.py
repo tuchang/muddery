@@ -25,6 +25,7 @@ from muddery.utils.object_key_handler import OBJECT_KEY_HANDLER
 from muddery.utils.event_handler import EventHandler
 from muddery.utils.localized_strings_handler import _
 from muddery.utils.game_settings import GAME_SETTINGS
+from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
 from muddery.worlddata.data_sets import DATA_SETS
 
 
@@ -265,7 +266,7 @@ class MudderyObject(DefaultObject):
         data_models = set(OBJECT_KEY_HANDLER.get_models(key))
 
         related_tables = []
-        for table_info in DATA_SETS.custom_tables.all():
+        for table_info in DATA_SETS.data("custom_tables").all():
             # If set both related_table and related_typeclass are set, check both,
             # or check the one which is set.
             match_table = False
@@ -282,7 +283,7 @@ class MudderyObject(DefaultObject):
                     match_typeclass = True
                 else:
                     # check inherence
-                    typeclass = DATA_SETS.typeclasses.filter(key=table_info.related_typeclass)
+                    typeclass = DATA_SETS.data("typeclasses").filter(key=table_info.related_typeclass)
                     if typeclass:
                         typeclass = typeclass[0]
                         if self.is_typeclass(typeclass.path, exact=False):
@@ -295,7 +296,7 @@ class MudderyObject(DefaultObject):
 
         for table_name in related_tables:
             # Get db model
-            records = DATA_SETS.custom_records.filter(key=key, ctable=table_name)
+            records = DATA_SETS.data("custom_records").filter(key=key, ctable=table_name)
             for record in records:
                 serializable_value = record.value
                 if serializable_value == "":
@@ -315,7 +316,7 @@ class MudderyObject(DefaultObject):
         key = self.get_data_key()
         if key:
             self.load_data_fields(key)
-            self.load_custom_fields(key)
+            # self.load_custom_fields(key)
 
             # reset typeclass
             if key[:len(settings.REVERSE_EXIT_PREFIX)] == settings.REVERSE_EXIT_PREFIX:
@@ -391,13 +392,7 @@ class MudderyObject(DefaultObject):
         Args:
             typeclass_key: (string) Typeclass's key.
         """
-        typeclass_path = ""
-        try:
-            data = DATA_SETS.typeclasses.get(key=typeclass_key)
-            typeclass_path = data.path
-        except Exception, e:
-            pass
-
+        typeclass_path = TYPECLASSES_HANDLER.get_path(typeclass_key)
         if not typeclass_path:
             if typeclass_key:
                 typeclass_path = typeclass_key
@@ -568,7 +563,7 @@ class MudderyObject(DefaultObject):
         icon_key = getattr(self.dfield, "icon", None)
         if icon_key:
             try:
-                resource_info = DATA_SETS.icon_resources.get(key=icon_key)
+                resource_info = DATA_SETS.data("icon_resources").get(key=icon_key)
                 self.icon = resource_info.resource.name
             except Exception, e:
                 logger.log_errmsg("Load icon %s error: %s" % (icon_key, e))

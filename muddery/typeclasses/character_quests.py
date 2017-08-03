@@ -29,7 +29,7 @@ class MudderyQuest(MudderyObject):
     # initialize loot handler in a lazy fashion
     @lazy_property
     def loot_handler(self):
-        return LootHandler(self, DATA_SETS.quest_reward_list)
+        return LootHandler(self, DATA_SETS.data("quest_reward_list"))
 
     def at_object_creation(self):
         """
@@ -62,7 +62,7 @@ class MudderyQuest(MudderyObject):
             return
 
         # Get objectives.
-        obj_records = DATA_SETS.quest_objectives.filter(quest=key)
+        obj_records = DATA_SETS.data("quest_objectives").filter(quest=key)
 
         for obj_record in obj_records:
             objective_type = obj_record.type

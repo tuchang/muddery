@@ -20,10 +20,12 @@ import os
 from django.conf import settings
 from evennia.utils import search, logger
 from muddery.utils import builder, importer, utils
+from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
 from muddery.utils.game_settings import GAME_SETTINGS
 from muddery.worlddata.data_sets import DATA_SETS
 from muddery.typeclasses.character_skills import MudderySkill
-import traceback
+from muddery.utils.plugins_handler import PLUGINS_HANDLER
+
 
 LIMBO_DESC = "Welcome to your new {wMuddery{n-based game! " +\
              "Visit http://www.muddery.org if you need help, " +\
@@ -35,9 +37,16 @@ def at_initial_setup():
     """
 
     try:
+        # load plugins
+        PLUGINS_HANDLER.reload()
+        print("Reload plugins.")
+    
         # load world data
         import_local_data()
         print("Import local data.")
+        
+        # load typeclasses
+        TYPECLASSES_HANDLER.add_group(DATA_SETS.group("typeclasses"))
 
         # load game settings
         GAME_SETTINGS.reset()
@@ -75,9 +84,8 @@ def at_initial_setup():
             print("Set supervisor.")
 
     except Exception, e:
-        ostring = "Can't set initial data: %s" % e
-        print(ostring)
-        print(traceback.format_exc())
+        err_message = "Can't set initial data: %s" % e
+        logger.log_tracemsg(err_message)
 
 
 def import_local_data():
@@ -91,7 +99,7 @@ def import_local_data():
     system_data_path = os.path.join(settings.MUDDERY_DIR, settings.WORLD_DATA_FOLDER)
 
     # load system data
-    for data_handlers in DATA_SETS.system_data:
+    for data_handlers in DATA_SETS.group("system_data"):
         try:
             data_handlers.import_from_path(system_data_path, system_data=True)
         except Exception, e:
@@ -105,9 +113,14 @@ def import_local_data():
     custom_data_path = os.path.join(settings.GAME_DIR, settings.WORLD_DATA_FOLDER)
 
     # load all custom data
-    for data_handlers in DATA_SETS.file_data_handlers:
+    for data_handler in DATA_SETS.group("file_data"):
         try:
-            data_handlers.import_from_path(custom_data_path, system_data=False)
+            data_handler.import_from_path(custom_data_path, system_data=False)
         except Exception, e:
             err_message = "Cannot import game data. %s" % e
             logger.log_tracemsg(err_message)
+
+    ##########################
+    # load plugin data
+    ##########################
+    PLUGINS_HANDLER.load_data()

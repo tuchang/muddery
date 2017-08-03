@@ -6,6 +6,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from muddery.utils.model_utils import auto_generate_key, validate_object_key
 
 
 KEY_LENGTH = 255
@@ -16,46 +17,6 @@ VALUE_LENGTH = 80
 
 re_attribute_key = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')
 
-
-def auto_generate_key(model):
-    if not model.key:
-        index = 0
-        if model.id is not None:
-            # Get this record's id.
-            index = model.id
-        else:
-            try:
-                # Get last id.
-                query = model.__class__.objects.last()
-                index = int(query.id)
-                index += 1
-            except Exception, e:
-                pass
-
-        model.key = model.__class__.__name__ + "_" + str(index)
-
-
-def validate_object_key(model):
-    """
-    Check if the key exists. Object's key should be unique in all objects.
-    """
-    # Get models.
-    from muddery.worlddata.data_sets import DATA_SETS
-    for data_settings in DATA_SETS.object_data:
-        if data_settings.model_name() == model.__class__.__name__:
-            # Models will validate unique values of its own,
-            # so we do not validate them here.
-            continue
-
-        try:
-            data_settings.model.objects.get(key=model.key)
-        except Exception, e:
-            continue
-
-        error = ValidationError("The key '%(value)s' already exists in model %(model)s.",
-                                code="unique",
-                                params={"value": model.key, "model": data_settings.model_name()})
-        raise ValidationError({"key": error})
 
 # ------------------------------------------------------------
 #
@@ -1099,10 +1060,10 @@ class common_characters(models.Model):
         from muddery.worlddata.data_sets import DATA_SETS
 
         try:
-            DATA_SETS.character_models.get(key=self.model, level=self.level)
+            DATA_SETS.data("character_models").get(key=self.model, level=self.level)
         except Exception, e:
             message = "Can not get this level's data."
-            levels = DATA_SETS.character_models.filter(key=self.model)
+            levels = DATA_SETS.data("character_models").filter(key=self.model)
             available = [str(level.level) for level in levels]
             if len(available) == 1:
                 message += " Available level: " + available[0]

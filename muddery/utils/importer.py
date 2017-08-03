@@ -28,8 +28,7 @@ def unzip_data_all(file):
         UPGRADE_HANDLER.upgrade_data(temp_path, None, configs.MUDDERY_LIB)
 
         # import models one by one
-        data_handlers = DATA_SETS.file_data_handlers
-        for data_handler in data_handlers:
+        for data_handler in DATA_SETS.group("file_data"):
             data_handler.import_from_path(temp_path, system_data=False)
 
     finally:

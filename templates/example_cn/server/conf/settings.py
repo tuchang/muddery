@@ -63,3 +63,24 @@ SECRET_KEY = {SECRET_KEY}
 
 # Skill functions set
 SKILL_FUNC_SET = "statements.statement_func_set.SkillFuncSet"
+
+
+######################################################################
+# Plugins
+######################################################################
+from plugins import settings_plugins
+
+# Add plugin's static files dirs.
+STATICFILES_DIRS = STATICFILES_DIRS + settings_plugins.STATICFILES_DIRS
+
+# Add plugin's templates.
+TEMPLATES[0]['DIRS'].extend(settings_plugins.TEMPLATES)
+
+# Add plugin's context processors.
+TEMPLATES[0]['OPTIONS']['context_processors'].extend(settings_plugins.CONTEXT_PROCESSORS)
+
+# Add plugin's apps.
+INSTALLED_APPS = INSTALLED_APPS + tuple(settings_plugins.APPS)
+
+# Plugin's name.
+PLUGINS = settings_plugins.PLUGINS

@@ -7,6 +7,7 @@ from __future__ import print_function
 from muddery.utils import utils
 from muddery.utils.object_key_handler import OBJECT_KEY_HANDLER
 from muddery.utils.game_settings import GAME_SETTINGS
+from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
 from muddery.worlddata.data_sets import DATA_SETS
 from django.conf import settings
 from django.apps import apps
@@ -53,22 +54,30 @@ def build_object(obj_key, caller=None, set_location=True):
 
     # Get object's information
     record = None
-    typeclass = None
     try:
         record = get_object_record(obj_key)
-
-        # get typeclass model
-        typeclass = DATA_SETS.typeclasses.get(key=record.typeclass)
     except Exception, e:
-        ostring = "Can not get typeclass of %s: %s." % (obj_key, e)
+        ostring = "Can not get the data of %s: %s." % (obj_key, e)
         print(ostring)
         print(traceback.print_exc())
+        if caller:
+            caller.msg(ostring)
         pass
 
-    if not record or not typeclass:
-        ostring = "Can not find the data of %s." % obj_key
+    if not record:
+        ostring = "Can not get the data of %s." % obj_key
         print(ostring)
         print(traceback.print_exc())
+        if caller:
+            caller.msg(ostring)
+        return
+
+    # get typeclass path
+    typeclass = TYPECLASSES_HANDLER.get_data(record.typeclass)
+    typeclass_path = typeclass["path"]
+    if not typeclass_path:
+        ostring = "Can not get the typeclass of %s." % obj_key
+        print(ostring)
         if caller:
             caller.msg(ostring)
         return
@@ -76,7 +85,7 @@ def build_object(obj_key, caller=None, set_location=True):
     # Create object.
     try:
         name = getattr(record, "name", "")
-        obj = create.create_object(typeclass.path, name)
+        obj = create.create_object(typeclass_path, name)
     except Exception, e:
         ostring = "Can not create obj %s: %s" % (obj_key, e)
         print(ostring)
@@ -96,7 +105,7 @@ def build_object(obj_key, caller=None, set_location=True):
             caller.msg(ostring)
         return
 
-    if typeclass.key == settings.TWO_WAY_EXIT_TYPECLASS_KEY:
+    if typeclass["key"] == settings.TWO_WAY_EXIT_TYPECLASS_KEY:
         # If it's a two way exit, create the reverse exit.
 
         # Create object.
@@ -124,7 +133,7 @@ def build_object(obj_key, caller=None, set_location=True):
     return obj
 
 
-def build_unique_objects(data_handler, type_name, caller=None):
+def build_unique_objects(data_handler, caller=None):
     """
     Build all objects in a model.
 
@@ -132,6 +141,8 @@ def build_unique_objects(data_handler, type_name, caller=None):
         model_name: (string) The name of the data model.
         caller: (command caller) If provide, running messages will send to the caller.
     """
+    type_name = data_handler.model_name()
+    
     # get typeclass model
     all_objects = data_handler.all()
 
@@ -202,9 +213,16 @@ def build_unique_objects(data_handler, type_name, caller=None):
             if caller:
                 caller.msg(ostring)
 
+            typeclass_path = TYPECLASSES_HANDLER.get_path(record.typeclass)
+            if not typeclass_path:
+                ostring = "Can not get the typeclass of %s." % record.key
+                print(ostring)
+                if caller:
+                    caller.msg(ostring)
+                continue
+                
             try:
-                typeclass = DATA_SETS.typeclasses.get(key=record.typeclass)
-                obj = create.create_object(typeclass.path, record.name)
+                obj = create.create_object(typeclass_path, record.name)
                 count_create += 1
             except Exception, e:
                 ostring = "Can not create obj %s: %s" % (record.key, e)
@@ -276,19 +294,19 @@ def build_all(caller=None):
     OBJECT_KEY_HANDLER.reload()
 
     # Build areas.
-    build_unique_objects(DATA_SETS.world_areas, DATA_SETS.world_areas.model_name(), caller)
+    build_unique_objects(DATA_SETS.data("world_areas"), caller)
     
     # Build rooms.
-    build_unique_objects(DATA_SETS.world_rooms, DATA_SETS.world_rooms.model_name(), caller)
+    build_unique_objects(DATA_SETS.data("world_rooms"), caller)
 
     # Build exits.
-    build_unique_objects(DATA_SETS.world_exits, DATA_SETS.world_exits.model_name(), caller)
+    build_unique_objects(DATA_SETS.data("world_exits"), caller)
 
     # Build objects.
-    build_unique_objects(DATA_SETS.world_objects, DATA_SETS.world_objects.model_name(), caller)
+    build_unique_objects(DATA_SETS.data("world_objects"), caller)
 
     # Build NPCs.
-    build_unique_objects(DATA_SETS.world_npcs, DATA_SETS.world_npcs.model_name(), caller)
+    build_unique_objects(DATA_SETS.data("world_npcs"), caller)
 
 
 def reset_default_locations():
@@ -302,7 +320,7 @@ def reset_default_locations():
     if not default_home_key:
         # If does not have the default_home_key, get the first room in WORLD_ROOMS.
         try:
-            rooms = DATA_SETS.world_rooms.all()
+            rooms = DATA_SETS.data("world_rooms").all()
             if rooms:
                 default_home_key = rooms[0].key
         except Exception, e:
@@ -323,7 +341,7 @@ def reset_default_locations():
     if not start_location_key:
         # If does not have the start_location_key, get the first room in WORLD_ROOMS
         try:
-            rooms = DATA_SETS.world_rooms.all()
+            rooms = DATA_SETS.data("world_rooms").all()
             if rooms:
                 start_location_key = rooms[0].key
         except Exception, e:

@@ -59,7 +59,7 @@ def world_editor(request):
     """
     Render the world editor.
     """
-    data_handlers = DATA_SETS.file_data_handlers
+    data_handlers = DATA_SETS.group("file_data")
     models = [{"key": data_handler.model_name(),
                "name": _(data_handler.model_name(), category="models")
                        + "(" + data_handler.model_name() + ")"} for data_handler in data_handlers]
@@ -232,7 +232,7 @@ def import_data_single(request):
             model_name = filename
 
         # get data handler
-        data_handler = DATA_SETS.get_handler(model_name)
+        data_handler = DATA_SETS.data(model_name)
         if not data_handler:
             logger.log_tracemsg("Cannot get data handler: %s" % model_name)
             return render(request, 'fail.html', {"message": "Can not import this file."})
@@ -282,7 +282,7 @@ def apply_changes(request):
         system_data_path = os.path.join(settings.MUDDERY_DIR, settings.WORLD_DATA_FOLDER)
 
         # load system data
-        for data_handlers in DATA_SETS.system_data:
+        for data_handlers in DATA_SETS.group("system_data"):
             try:
                 data_handlers.import_from_path(system_data_path, system_data=True)
             except Exception, e:

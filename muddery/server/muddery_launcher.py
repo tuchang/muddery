@@ -126,20 +126,21 @@ def main():
         evennia_launcher.main()
 
     if option != "noop":
-        # check current game's version
-        try:
-            utils.check_gamedir(configs.CURRENT_DIR)
-            evennia_launcher.set_gamedir(configs.CURRENT_DIR)
+        if option == "start":
+            # check current game's version
+            try:
+                utils.check_gamedir(configs.CURRENT_DIR)
+                evennia_launcher.set_gamedir(configs.CURRENT_DIR)
 
-            from muddery.server.upgrader.upgrade_handler import UPGRADE_HANDLER
-            game_ver, game_template = utils.get_game_config(configs.CURRENT_DIR)
-            if UPGRADE_HANDLER.can_upgrade(game_ver):
-                ver_str = ".".join([str(v) for v in game_ver])
-                print(configs.NEED_UPGRADE.format(version=ver_str))
+                from muddery.server.upgrader.upgrade_handler import UPGRADE_HANDLER
+                game_ver, game_template = utils.get_game_config(configs.CURRENT_DIR)
+                if UPGRADE_HANDLER.can_upgrade(game_ver):
+                    ver_str = ".".join([str(v) for v in game_ver])
+                    print(configs.NEED_UPGRADE.format(version=ver_str))
+                    return
+            except Exception, e:
+                print("Check upgrade error: %s" % e)
                 return
-        except Exception, e:
-            print("Check upgrade error: %s" % e)
-            return
 
         # pass-through to evennia
         evennia_launcher.main()

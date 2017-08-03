@@ -15,28 +15,43 @@ from muddery.utils.exception import MudderyError
 
 class DataHandler(object):
     """
-
+    Handler db tables.
     """
-    def __init__(self, model_name):
+    def __init__(self, model_name, app_name=None):
         """
+        Set this handler.
 
         Args:
-            model_name:
+            app_name: (string) Data's app.
+            model_name: (string) Data's model.
 
         Returns:
-
+            None
         """
+        if not app_name:
+            app_name = settings.WORLD_DATA_APP
+
+        self._app_name = app_name
         self._model_name = model_name
         self._model = None
         self._objects = None
         
         try:
-            self._model = apps.get_model(settings.WORLD_DATA_APP, self._model_name)
+            self._model = apps.get_model(app_name, model_name)
             self._objects = self._model.objects
         except Exception, e:
-            ostring = "Can not load model %s: %s" % (self._model_name, e)
+            ostring = "Can not load model %s: %s" % (model_name, e)
             print(ostring)
             logger.log_errmsg(ostring)
+            
+    def app_name(self):
+        """
+        Get app's name.
+
+        Returns:
+            app's name
+        """
+        return self._app_name
 
     def model_name(self):
         """
