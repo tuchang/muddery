@@ -26,10 +26,6 @@ class MudderyNPC(MudderyCharacter):
             
         """
         super(MudderyNPC, self).at_object_creation()
-        
-        # NPC's shop
-        if not self.attributes.has("shops"):
-            self.db.shops = {}
 
     def after_data_loaded(self):
         """
@@ -42,9 +38,6 @@ class MudderyNPC(MudderyCharacter):
 
         # load dialogues.
         self.load_dialogues()
-        
-        # load shops
-        # self.load_shops()
 
     def load_dialogues(self):
         """
@@ -55,34 +48,6 @@ class MudderyNPC(MudderyCharacter):
 
         self.default_dialogues = [dialogue.dialogue for dialogue in dialogues if dialogue.default]
         self.dialogues = [dialogue.dialogue for dialogue in dialogues if not dialogue.default]
-
-    def load_shops(self):
-        """
-        Load character's shop.
-        """
-        # shops records
-        shop_records = DATA_SETS.data("npc_shops").filter(npc=self.get_data_key())
-
-        shop_keys = set([record.shop for record in shop_records])
-
-        # remove old shops
-        for shop_key in self.db.shops:
-            if shop_key not in shop_keys:
-                # remove this shop
-                self.db.shops[shop_key].delete()
-                del self.db.shops[shop_key]
-
-        # add new shop
-        for shop_record in shop_records:
-            shop_key = shop_record.shop
-            if shop_key not in self.db.shops:
-                # Create shop object.
-                shop_obj = build_object(shop_key)
-                if not shop_obj:
-                    logger.log_errmsg("Can't create shop: %s" % shop_key)
-                    continue
-
-                self.db.shops[shop_key] = shop_obj
                 
     def get_available_commands(self, caller):
         """

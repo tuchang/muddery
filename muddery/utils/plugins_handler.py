@@ -38,6 +38,9 @@ class PluginsHandler(object):
         for plugin_name in settings.PLUGINS:
             self.load_plugin(plugin_name)
             
+        for plugin_name in settings.PLUGINS:
+            self.load_notifications()
+            
     def load_plugin(self, plugin_name):
         """
         Load a plugin.
@@ -89,7 +92,7 @@ class PluginsHandler(object):
         """
         self.notifications[(typeclass, notification,)] = handler
         
-    def at_notification(self, typeclass, func_name, args, kwargs, result):
+    def at_notification(self, typeclass, func_name, caller, args, kwargs, result):
         """
         Called when an object run a function.
         
@@ -98,15 +101,14 @@ class PluginsHandler(object):
             func_name: (string) function's name
             result: function's result
         """
-        print("typeclass: %s" % typeclass)
-        print("func_name: %s" % func_name)
-        print("args: %s" % (args,))
-        print("kwargs: %s" % kwargs)
-        print("result: %s" % result)
-        
         key = (typeclass, func_name,)
         if key in self.notifications:
-            return self.notifications[key].at_notification(typeclass, func_name, args, kwargs, result)
+            plugin = self.notifications[key]
+            try:
+                result = plugin.at_notification(typeclass, func_name, caller, args, kwargs, result)
+            except Exception, e:
+                err_message = "Notification error of plugin '%s': %s" % (plugin.name, e)
+                logger.log_tracemsg(err_message)
         else:
             return result
 

@@ -39,7 +39,12 @@ class MudderyObject(DefaultObject):
         # Plugin's notification decorator. Call plugin's notification handler after the function.
         def wrapper(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
-            result = PLUGINS_HANDLER.at_notification(self.typeclass_path, func.__name__, args, kwargs, result)
+            result = PLUGINS_HANDLER.at_notification(self.db.typeclass_key,
+                                                     func.__name__,
+                                                     self,
+                                                     args,
+                                                     kwargs,
+                                                     result)
             return result
 
         return wrapper
@@ -111,7 +116,6 @@ class MudderyObject(DefaultObject):
         raise Exception("Cannot delete the attr object!")
     cattr = property(__cattr_get, __cattr_set, __cattr_del)
 
-    @notification
     def at_object_creation(self):
         """
         Called once, when this object is first created. This is the
@@ -122,20 +126,15 @@ class MudderyObject(DefaultObject):
         """
         super(MudderyObject, self).at_object_creation()
 
-        self.typeclass_key = None
-        self.condition = None
-        self.icon = None
+        # typeclass's key
+        if not self.attributes.has("typeclass_key"):
+            self.db.typeclass_key = ""
 
-    @notification
     def at_init(self):
         """
         Load world data.
         """
         super(MudderyObject, self).at_init()
-
-        self.typeclass_key = None
-        self.condition = None
-        self.icon = None
         
         try:
             # Load db data.
@@ -274,8 +273,6 @@ class MudderyObject(DefaultObject):
             if not key:
                 return
 
-        typeclass_key = getattr(self.dfield, "typeclass", None)
-
         data_models = set(OBJECT_KEY_HANDLER.get_models(key))
 
         related_tables = []
@@ -292,7 +289,7 @@ class MudderyObject(DefaultObject):
                 match_table = True
 
             if table_info.related_typeclass:
-                if typeclass_key == table_info.related_typeclass:
+                if self.db.typeclass_key == table_info.related_typeclass:
                     match_typeclass = True
                 else:
                     # check inherence
@@ -375,6 +372,7 @@ class MudderyObject(DefaultObject):
         """
         pass
 
+    @notification
     def after_data_loaded(self):
         """
         Called after self.data_loaded().
@@ -413,7 +411,15 @@ class MudderyObject(DefaultObject):
                 typeclass_path = settings.BASE_OBJECT_TYPECLASS
         
         if self.is_typeclass(typeclass_path, exact=True):
-            # No change.
+            # Typeclass's path does not change.
+            if typeclass_key != self.db.typeclass_key:
+                # But typeclass's key changed.
+                self.db.typeclass_key = typeclass_key
+
+                # fake this call to mimic the first save
+                self.at_first_save()
+            
+                return
             return
 
         if not hasattr(self, 'swap_typeclass'):
@@ -423,12 +429,12 @@ class MudderyObject(DefaultObject):
         # Set new typeclass.
         # It will call target typeclass's at_object_creation hook.
         # You should prevent at_object_creation rewrite current attributes.
+        self.db.typeclass_key = typeclass_key
+        
         self.swap_typeclass(typeclass_path, clean_attributes=False)
         if typeclass_path != self.typeclass_path:
             logger.log_errmsg("%s's typeclass %s is wrong!" % (self.get_data_key(), typeclass_path))
             return
-        
-        self.typeclass_key = typeclass_key
 
     def set_name(self, name):
         """
