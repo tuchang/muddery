@@ -44,6 +44,9 @@ class WorldRoomsForm(forms_base.WorldRoomsForm):
 class WorldExitsForm(forms_base.WorldExitsForm):
     pass
 
+class ExitLocksForm(forms_base.ExitLocksForm):
+    pass
+
 class TwoWayExitsForm(forms_base.TwoWayExitsForm):
     pass
 

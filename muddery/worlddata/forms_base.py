@@ -1,8 +1,8 @@
 
 from django.contrib.admin.forms import forms
-from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
 from muddery.utils.localiztion_handler import localize_form_fields
 from muddery.worlddata.data_sets import DATA_SETS
+from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
 
 
 def get_all_pocketable_objects():
@@ -11,7 +11,7 @@ def get_all_pocketable_objects():
     """
     # available objects are common objects, foods skill books or equipments
     objects = DATA_SETS.data("common_objects").all()
-    choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+    choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
 
     foods = DATA_SETS.data("foods").all()
     choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in foods])
@@ -31,14 +31,14 @@ class GameSettingsForm(forms.ModelForm):
         
         choices = [("", "---------")]
         objects = DATA_SETS.data("world_rooms").all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['default_home_key'] = forms.ChoiceField(choices=choices, required=False)
         self.fields['start_location_key'] = forms.ChoiceField(choices=choices, required=False)
         self.fields['default_player_home_key'] = forms.ChoiceField(choices=choices, required=False)
 
         choices = [("", "---------")]
         objects = DATA_SETS.data("common_characters").filter(typeclass="CLASS_PLAYER")
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['default_player_character_key'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -67,8 +67,8 @@ class TypeclassesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TypeclassesForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("class_categories").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("class_categories").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['category'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -157,8 +157,8 @@ class WorldAreasForm(forms.ModelForm):
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
 
         choices = [("", "---------")]
-        objects = DATA_SETS.data("image_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("image_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['background'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -177,18 +177,18 @@ class WorldRoomsForm(forms.ModelForm):
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
 
         choices = [("", "---------")]
-        objects = DATA_SETS.data("world_areas").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("world_areas").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['location'] = forms.ChoiceField(choices=choices)
 
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         choices = [("", "---------")]
-        objects = DATA_SETS.data("image_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("image_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['background'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -206,8 +206,8 @@ class WorldExitsForm(forms.ModelForm):
         choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("world_rooms").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("world_rooms").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['location'] = forms.ChoiceField(choices=choices)
         self.fields['destination'] = forms.ChoiceField(choices=choices)
 
@@ -222,8 +222,8 @@ class ExitLocksForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExitLocksForm, self).__init__(*args, **kwargs)
 
-        #objects = models.world_exits.objects.filter(typeclass="CLASS_LOCKED_EXIT")
-        #choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        #objects = models.world_exits.filter(typeclass="CLASS_LOCKED_EXIT")
+        #choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         #self.fields['key'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -238,8 +238,8 @@ class TwoWayExitsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TwoWayExitsForm, self).__init__(*args, **kwargs)
 
-        #objects = models.world_exits.objects.filter(typeclass="CLASS_LOCKED_EXIT")
-        #choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        #objects = models.world_exits.filter(typeclass="CLASS_LOCKED_EXIT")
+        #choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         #self.fields['key'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -259,13 +259,13 @@ class WorldObjectsForm(forms.ModelForm):
         choices.append((objects["key"], objects["name"] + " (" + objects["key"] + ")"))
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("world_rooms").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("world_rooms").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['location'] = forms.ChoiceField(choices=choices)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -285,21 +285,21 @@ class WorldNPCsForm(forms.ModelForm):
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
         
         # NPC's location
-        objects = DATA_SETS.data("world_rooms").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("world_rooms").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['location'] = forms.ChoiceField(choices=choices)
         
         # NPC's model
         choices = [("", "---------")]
-        objects = DATA_SETS.data("character_models").objects.all()
+        objects = DATA_SETS.data("character_models").all()
         model_keys = set([obj.key for obj in objects])
         choices.extend([(model_key, model_key) for model_key in model_keys])
         self.fields['model'] = forms.ChoiceField(choices=choices, required=False)
         
         # NPC's icon
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -313,8 +313,8 @@ class ObjectCreatorsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ObjectCreatorsForm, self).__init__(*args, **kwargs)
 
-        #objects = models.world_objects.objects.filter(typeclass="CLASS_OBJECT_CREATOR")
-        #choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        #objects = models.world_objects.filter(typeclass="CLASS_OBJECT_CREATOR")
+        #choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         #self.fields['key'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -329,8 +329,8 @@ class CreatorLootListForm(forms.ModelForm):
         super(CreatorLootListForm, self).__init__(*args, **kwargs)
 
         # providers must be object_creators
-        objects = DATA_SETS.data("world_objects").objects.filter(typeclass="CLASS_OBJECT_CREATOR")
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("world_objects").filter(typeclass="CLASS_OBJECT_CREATOR")
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['provider'] = forms.ChoiceField(choices=choices)
 
         # available objects
@@ -339,8 +339,8 @@ class CreatorLootListForm(forms.ModelForm):
         
         # depends on quest
         choices = [("", "---------")]
-        objects = DATA_SETS.data("quests").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("quests").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['quest'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -355,10 +355,10 @@ class CharacterLootListForm(forms.ModelForm):
         super(CharacterLootListForm, self).__init__(*args, **kwargs)
 
         # providers can be world_npc or common_character
-        npcs = DATA_SETS.data("world_npcs").objects.all()
+        npcs = DATA_SETS.data("world_npcs").all()
         choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in npcs]
 
-        characters = DATA_SETS.data("common_characters").objects.all()
+        characters = DATA_SETS.data("common_characters").all()
         choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in characters])
 
         self.fields['provider'] = forms.ChoiceField(choices=choices)
@@ -369,8 +369,8 @@ class CharacterLootListForm(forms.ModelForm):
 
         # depends on quest
         choices = [("", "---------")]
-        objects = DATA_SETS.data("quests").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("quests").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['quest'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -385,8 +385,8 @@ class QuestRewardListForm(forms.ModelForm):
         super(QuestRewardListForm, self).__init__(*args, **kwargs)
 
         # providers must be object_creators
-        objects = DATA_SETS.data("quests").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quests").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['provider'] = forms.ChoiceField(choices=choices)
 
         # available objects
@@ -395,8 +395,8 @@ class QuestRewardListForm(forms.ModelForm):
         
         # depends on quest
         choices = [("", "---------")]
-        objects = DATA_SETS.data("quests").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("quests").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['quest'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -415,8 +415,8 @@ class CommonObjectsForm(forms.ModelForm):
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -430,13 +430,13 @@ class FoodsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FoodsForm, self).__init__(*args, **kwargs)
         
-        objects = TYPECLASSES_HANDLER.get_data("CLASS_FOOD")
+        objects = TYPECLASSES_HANDLER.get_get("CLASS_FOOD")
         choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -456,14 +456,14 @@ class SkillBooksForm(forms.ModelForm):
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
         
         # skills
-        objects = DATA_SETS.data("skills").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("skills").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['skill'] = forms.ChoiceField(choices=choices)
         
         # icons
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -494,14 +494,14 @@ class CommonCharacterForm(forms.ModelForm):
 
         # models
         choices = [("", "---------")]
-        objects = DATA_SETS.data("character_models").objects.all()
+        objects = DATA_SETS.data("character_models").all()
         model_keys = set([obj.key for obj in objects])
         choices.extend([(model_key, model_key) for model_key in model_keys])
         self.fields['model'] = forms.ChoiceField(choices=choices, required=False)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -516,7 +516,7 @@ class DefaultObjectsForm(forms.ModelForm):
         super(DefaultObjectsForm, self).__init__(*args, **kwargs)
 
         # all character's models
-        character_models = set([record.key for record in DATA_SETS.data("character_models").objects.all()])
+        character_models = set([record.key for record in DATA_SETS.data("character_models").all()])
         choices = [(key, key) for key in character_models]
         self.fields['character'] = forms.ChoiceField(choices=choices)
 
@@ -540,8 +540,8 @@ class SkillsForm(forms.ModelForm):
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -556,12 +556,12 @@ class DefaultSkillsForm(forms.ModelForm):
         super(DefaultSkillsForm, self).__init__(*args, **kwargs)
 
         # all character's models
-        character_models = set([record.key for record in DATA_SETS.data("character_models").objects.all()])
+        character_models = set([record.key for record in DATA_SETS.data("character_models").all()])
         choices = [(key, key) for key in character_models]
         self.fields['character'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("skills").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("skills").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['skill'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -576,12 +576,12 @@ class NPCDialoguesForm(forms.ModelForm):
         super(NPCDialoguesForm, self).__init__(*args, **kwargs)
 
         # All NPCs.
-        objects = DATA_SETS.data("world_npcs").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("world_npcs").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['npc'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("dialogues").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("dialogues").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['dialogue'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -610,12 +610,12 @@ class QuestObjectivesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(QuestObjectivesForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("quests").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quests").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['quest'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("quest_objective_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quest_objective_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['type'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -629,13 +629,13 @@ class QuestDependenciesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(QuestDependenciesForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("quests").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quests").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['quest'] = forms.ChoiceField(choices=choices)
         self.fields['dependency'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("quest_dependency_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quest_dependency_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['type'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -649,16 +649,16 @@ class DialogueQuestDependenciesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DialogueQuestDependenciesForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("dialogues").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("dialogues").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['dialogue'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("quests").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quests").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['dependency'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("quest_dependency_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("quest_dependency_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['type'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -676,17 +676,17 @@ class EquipmentsForm(forms.ModelForm):
         choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
         self.fields['typeclass'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("equipment_positions").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("equipment_positions").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['position'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("equipment_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("equipment_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['type'] = forms.ChoiceField(choices=choices)
 
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
         
         localize_form_fields(self)
@@ -701,12 +701,12 @@ class CareerEquipmentsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CareerEquipmentsForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("character_careers").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("character_careers").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['career'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("equipment_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("equipment_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['equipment'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -720,12 +720,12 @@ class EventDataForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventDataForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("event_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("event_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['type'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("event_trigger_types").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("event_trigger_types").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['trigger_type'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -739,12 +739,12 @@ class EventAttacksForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventAttacksForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("event_data").objects.filter(type="EVENT_ATTACK")
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("event_data").filter(type="EVENT_ATTACK")
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['key'] = forms.ChoiceField(choices=choices)
         
-        objects = DATA_SETS.data("common_characters").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("common_characters").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['mob'] = forms.ChoiceField(choices=choices)
 
         localize_form_fields(self)
@@ -758,18 +758,18 @@ class EventDialoguesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventDialoguesForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("event_data").objects.filter(type="EVENT_DIALOGUE")
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("event_data").filter(type="EVENT_DIALOGUE")
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['key'] = forms.ChoiceField(choices=choices)
 
-        objects = DATA_SETS.data("dialogues").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("dialogues").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['dialogue'] = forms.ChoiceField(choices=choices)
 
         # NPCs
         choices = [("", "---------")]
-        objects = DATA_SETS.data("world_npcs").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("world_npcs").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['npc'] = forms.ChoiceField(choices=choices, required=False)
 
         localize_form_fields(self)
@@ -793,8 +793,8 @@ class DialogueRelationsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DialogueRelationsForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("dialogues").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("dialogues").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['dialogue'] = forms.ChoiceField(choices=choices)
         self.fields['next_dlg'] = forms.ChoiceField(choices=choices)
 
@@ -809,19 +809,19 @@ class DialogueSentencesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DialogueSentencesForm, self).__init__(*args, **kwargs)
 
-        objects = DATA_SETS.data("dialogues").objects.all()
-        choices = [(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects]
+        objects = DATA_SETS.data("dialogues").all()
+        choices = [(obj.key, obj.name + " (" + obj.key + ")") for obj in objects]
         self.fields['dialogue'] = forms.ChoiceField(choices=choices)
 
         # dialogue's icon
         choices = [("", "---------")]
-        objects = DATA_SETS.data("icon_resources").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("icon_resources").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['icon'] = forms.ChoiceField(choices=choices, required=False)
         
         choices = [("", "---------")]
-        objects = DATA_SETS.data("quests").objects.all()
-        choices.extend([(obj["key"], obj["name"] + " (" + obj["key"] + ")") for obj in objects])
+        objects = DATA_SETS.data("quests").all()
+        choices.extend([(obj.key, obj.name + " (" + obj.key + ")") for obj in objects])
         self.fields['provide_quest'] = forms.ChoiceField(choices=choices, required=False)
         self.fields['complete_quest'] = forms.ChoiceField(choices=choices, required=False)
 

@@ -38,7 +38,23 @@ class Handler(object):
             except Exception, e:
                 err_message = "Cannot import game data. %s" % e
                 logger.log_tracemsg(err_message)
+
+    def at_load_notifications(self, register):
+        """
+        Register notifications.
+        """
+        register.register_notification("CLASS_COMMON_NPC", "at_object_creation", self)
         
+    def at_notification(self, typeclass, func_name, args, kwargs, result):
+        """
+        """
+        print("typeclass: %s" % typeclass)
+        print("func_name: %s" % func_name)
+        print("args: %s" % args)
+        print("kwargs: %s" % kwargs)
+        print("result: %s" % result)
+        return result
+
 
 # main plugin handler
 HANDLER = Handler()

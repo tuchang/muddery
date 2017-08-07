@@ -27,12 +27,23 @@ from muddery.utils.localized_strings_handler import _
 from muddery.utils.game_settings import GAME_SETTINGS
 from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
 from muddery.worlddata.data_sets import DATA_SETS
+from muddery.utils.plugins_handler import PLUGINS_HANDLER
 
 
 class MudderyObject(DefaultObject):
     """
     This object loads attributes from world data on init automatically.
     """
+    
+    def notification(func):
+        # Plugin's notification decorator. Call plugin's notification handler after the function.
+        def wrapper(self, *args, **kwargs):
+            result = func(self, *args, **kwargs)
+            result = PLUGINS_HANDLER.at_notification(self.typeclass_path, func.__name__, args, kwargs, result)
+            return result
+
+        return wrapper
+        
     # initialize all handlers in a lazy fashion
     @lazy_property
     def event(self):
@@ -100,6 +111,7 @@ class MudderyObject(DefaultObject):
         raise Exception("Cannot delete the attr object!")
     cattr = property(__cattr_get, __cattr_set, __cattr_del)
 
+    @notification
     def at_object_creation(self):
         """
         Called once, when this object is first created. This is the
@@ -114,6 +126,7 @@ class MudderyObject(DefaultObject):
         self.condition = None
         self.icon = None
 
+    @notification
     def at_init(self):
         """
         Load world data.

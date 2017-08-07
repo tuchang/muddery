@@ -41,8 +41,6 @@ class TypeclassesHandler(object):
             if data["category"] not in self.category:
                 self.category[data["category"]] = []
             self.category[data["category"]].append(data)
-            
-        print("classes: %s" % self.dict)
 
     def get_data(self, key):
         """

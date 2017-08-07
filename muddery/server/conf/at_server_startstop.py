@@ -26,6 +26,7 @@ from muddery.utils import builder
 from muddery.utils.localiztion_handler import localize_model_fields
 from muddery.utils.plugins_handler import PLUGINS_HANDLER
 from muddery.utils.typeclasses_handler import TYPECLASSES_HANDLER
+from muddery.worlddata.data_sets import DATA_SETS
 
 
 def at_server_start():
