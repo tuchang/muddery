@@ -232,12 +232,12 @@ class QuestHandler(object):
             (boolean) result
         """
         # Get quest's record.
-        model_names = OBJECT_KEY_HANDLER.get_models(quest_key)
-        if not model_names:
+        data_models = OBJECT_KEY_HANDLER.get_models(quest_key)
+        if not data_models:
             return False
 
-        for model_name in model_names:
-            model_quest = apps.get_model(settings.WORLD_DATA_APP, model_name)
+        for app_name, model_name in data_models:
+            model_quest = apps.get_model(app_name, model_name)
 
             try:
                 record = model_quest.objects.get(key=quest_key)

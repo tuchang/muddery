@@ -17,6 +17,7 @@ from muddery.commands import combat
 from muddery.commands import general
 from muddery.commands import player
 from muddery.commands import unloggedin
+from muddery.utils.plugins_handler import PLUGINS_HANDLER
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -50,8 +51,6 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(general.CmdAttack())
         self.add(general.CmdUnlockExit())
         self.add(general.CmdGiveUpQuest())
-        self.add(general.CmdShopping())
-        self.add(general.CmdBuy())
         self.add(general.CmdSay())
 
         # Add empty login commands to the normal cmdset to
@@ -59,6 +58,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(general.CmdConnect())
         self.add(general.CmdCreate())
         self.add(general.CmdCreateConnect())
+        
+        # Add plugin's commands.
+        PLUGINS_HANDLER.load_commands(self)
 
 
 class PlayerCmdSet(default_cmds.PlayerCmdSet):
@@ -84,6 +86,9 @@ class PlayerCmdSet(default_cmds.PlayerCmdSet):
         self.add(player.CmdCharCreate())
         self.add(player.CmdCharDelete())
         self.add(player.CmdCharAll())
+        
+        # Add plugin's commands.
+        PLUGINS_HANDLER.load_commands(self)
 
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
@@ -102,6 +107,9 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
         self.add(unloggedin.CmdUnconnectedCreate())
         self.add(unloggedin.CmdUnconnectedConnect())
         self.add(unloggedin.CmdUnconnectedQuit())
+        
+        # Add plugin's commands.
+        PLUGINS_HANDLER.load_commands(self)
 
 
 class SessionCmdSet(default_cmds.SessionCmdSet):
@@ -123,6 +131,9 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
+        
+        # Add plugin's commands.
+        PLUGINS_HANDLER.load_commands(self)
 
 
 class CombatCmdSet(CmdSet):
@@ -139,3 +150,6 @@ class CombatCmdSet(CmdSet):
         self.add(general.CmdLook())
         self.add(general.CmdCastSkill())
         self.add(combat.CmdCombatInfo())
+        
+        # Add plugin's commands.
+        PLUGINS_HANDLER.load_commands(self)

@@ -218,19 +218,6 @@ class MudderyPlayerCharacter(MudderyCharacter):
         # Use nick name instead of normal name.
         return self.db.nickname
 
-    def get_appearance(self, caller):
-        """
-        This is a convenient hook for a 'look'
-        command to call.
-        """
-        # get name, description and available commands.
-        info = {"dbref": self.dbref,
-                "name": self.get_name(),
-                "desc": self.db.desc,
-                "cmds": self.get_available_commands(caller)}
-
-        return info
-
     def get_available_commands(self, caller):
         """
         This returns a list of available commands.

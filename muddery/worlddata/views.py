@@ -14,6 +14,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import logger
+from muddery.utils.plugins_handler import PLUGINS_HANDLER
 from muddery.utils import exporter, importer, readers, writers, utils
 from muddery.utils.builder import build_all
 from muddery.utils.localized_strings_handler import _, LOCALIZED_STRINGS_HANDLER
@@ -292,6 +293,9 @@ def apply_changes(request):
     try:
         # reload system data
         import_syetem_data()
+        
+        # reload plugins
+        PLUGINS_HANDLER.load_data()
 
         # reload localized strings
         LOCALIZED_STRINGS_HANDLER.reload()

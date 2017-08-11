@@ -12,6 +12,7 @@ from muddery.utils.localized_strings_handler import _
 from muddery.utils.dialogue_handler import DIALOGUE_HANDLER
 from muddery.utils.builder import build_object, delete_object
 from muddery.utils.game_settings import GAME_SETTINGS
+from muddery.utils.notifications import notification
 from muddery.worlddata.data_sets import DATA_SETS
 
 
@@ -48,26 +49,17 @@ class MudderyNPC(MudderyCharacter):
 
         self.default_dialogues = [dialogue.dialogue for dialogue in dialogues if dialogue.default]
         self.dialogues = [dialogue.dialogue for dialogue in dialogues if not dialogue.default]
-                
+
     def get_available_commands(self, caller):
         """
         This returns a list of available commands.
         """
-        commands = []
+        commands = super(MudderyNPC, self).get_available_commands(caller)
+
         if self.dialogues or self.default_dialogues:
             # If the character have something to talk, add talk command.
             commands.append({"name":_("Talk"), "cmd":"talk", "args":self.dbref})
-        
-        # Add shops.
-        for shop_obj in self.db.shops.values():
-            if not shop_obj.is_visible(caller):
-                continue
 
-            verb = shop_obj.verb
-            if not verb:
-                verb = shop_obj.get_name()
-            commands.append({"name":verb, "cmd":"shopping", "args":shop_obj.dbref})
-        
         return commands
 
     def have_quest(self, caller):

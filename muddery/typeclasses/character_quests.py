@@ -122,9 +122,9 @@ class MudderyQuest(MudderyObject):
                     
                     # Get the name of the objective object.
                     object_key = self.objectives[ordinal]["object"]
-                    model_names = OBJECT_KEY_HANDLER.get_models(object_key)
-                    for model_name in model_names:
-                        model = apps.get_model(settings.WORLD_DATA_APP, model_name)
+                    data_models = OBJECT_KEY_HANDLER.get_models(object_key)
+                    for app_name, model_name in data_models:
+                        model = apps.get_model(app_name, model_name)
                         # Get record.
                         try:
                             record = model.objects.get(key=object_key)
@@ -145,9 +145,9 @@ class MudderyQuest(MudderyObject):
 
                     # Get the name of the objective character.
                     object_key = self.objectives[ordinal]["object"]
-                    model_names = OBJECT_KEY_HANDLER.get_models(object_key)
-                    for model_name in model_names:
-                        model = apps.get_model(settings.WORLD_DATA_APP, model_name)
+                    data_models = OBJECT_KEY_HANDLER.get_models(object_key)
+                    for app_name, model_name in data_models:
+                        model = apps.get_model(app_name, model_name)
                         # Get record.
                         try:
                             record = model.objects.get(key=object_key)

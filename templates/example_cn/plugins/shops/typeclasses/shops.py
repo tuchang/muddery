@@ -14,6 +14,7 @@ from muddery.typeclasses.objects import MudderyObject
 from muddery.utils.builder import build_object, get_object_record
 from muddery.utils.game_settings import GAME_SETTINGS
 from muddery.worlddata.data_sets import DATA_SETS
+from plugins.shops.handler import HANDLER
 
 
 class MudderyShop(MudderyObject):
@@ -39,7 +40,7 @@ class MudderyShop(MudderyObject):
         Load shop goods.
         """
         # shops records
-        goods_records = DATA_SETS.shop_goods.filter(shop=self.get_data_key())
+        goods_records = DATA_SETS.data("shop_goods", HANDLER.name).filter(shop=self.get_data_key())
 
         goods_keys = set([record.key for record in goods_records])
 

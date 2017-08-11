@@ -1,3 +1,3 @@
 key,name,path,category,desc
-CLASS_SHOP,Shop,muddery.typeclasses.shops.MudderyShop,CATE_SHOP,Shops.
-CLASS_SHOP_GOODS,Goods,muddery.typeclasses.shop_goods.MudderyShopGoods,CATE_SHOP_GOODS,Goods
+CLASS_SHOP,Shop,plugins.shops.typeclasses.shops.MudderyShop,CATE_SHOP,Shops.
+CLASS_SHOP_GOODS,Goods,plugins.shops.typeclasses.shop_goods.MudderyShopGoods,CATE_SHOP_GOODS,Goods

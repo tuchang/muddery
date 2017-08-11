@@ -33,22 +33,7 @@ from muddery.utils.plugins_handler import PLUGINS_HANDLER
 class MudderyObject(DefaultObject):
     """
     This object loads attributes from world data on init automatically.
-    """
-    
-    def notification(func):
-        # Plugin's notification decorator. Call plugin's notification handler after the function.
-        def wrapper(self, *args, **kwargs):
-            result = func(self, *args, **kwargs)
-            result = PLUGINS_HANDLER.at_notification(self.db.typeclass_key,
-                                                     func.__name__,
-                                                     self,
-                                                     args,
-                                                     kwargs,
-                                                     result)
-            return result
-
-        return wrapper
-        
+    """        
     # initialize all handlers in a lazy fashion
     @lazy_property
     def event(self):
@@ -115,6 +100,13 @@ class MudderyObject(DefaultObject):
         "Stop accidental deletion."
         raise Exception("Cannot delete the attr object!")
     cattr = property(__cattr_get, __cattr_set, __cattr_del)
+    
+    def plugin_notify(self, func_name, args=None, kwargs=None, rtn=None):
+        """
+        Send notification to plugins handler.
+        """
+        return PLUGINS_HANDLER.at_notification(self.db.typeclass_key, func_name, self,
+                                               args, kwargs, rtn)
 
     def at_object_creation(self):
         """
@@ -239,9 +231,9 @@ class MudderyObject(DefaultObject):
 
         data_models = OBJECT_KEY_HANDLER.get_models(key)
 
-        for data_model in data_models:
+        for data_app, data_model in data_models:
             # Get db model
-            model_obj = apps.get_model(settings.WORLD_DATA_APP, data_model)
+            model_obj = apps.get_model(data_app, data_model)
             if not model_obj:
                 logger.log_errmsg("%s can not open model %s" % (key, data_model))
                 continue
@@ -335,8 +327,12 @@ class MudderyObject(DefaultObject):
             else:
                 typeclass = getattr(self.dfield, "typeclass", "")
             self.set_typeclass(typeclass)
-
+            
+            self.save()
+            
         self.after_data_loaded()
+        
+        self.plugin_notify("after_data_loaded")
 
         if not self.location and set_location:
             self.set_location(getattr(self.dfield, "location", ""))
@@ -372,7 +368,6 @@ class MudderyObject(DefaultObject):
         """
         pass
 
-    @notification
     def after_data_loaded(self):
         """
         Called after self.data_loaded().
@@ -623,11 +618,14 @@ class MudderyObject(DefaultObject):
         This is a convenient hook for a 'look'
         command to call.
         """
+        commands = self.get_available_commands(caller)
+        commands = self.plugin_notify("get_available_commands", args=(caller,), rtn=commands)
+        
         # Get name, description and available commands.
         info = {"dbref": self.dbref,
-                "name": self.name,
+                "name": self.get_name(),
                 "desc": self.db.desc,
-                "cmds": self.get_available_commands(caller),
+                "cmds": commands,
                 "icon": getattr(self, "icon", None)}
 
         return info

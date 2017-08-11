@@ -38,7 +38,7 @@ class ObjectKeyHandler(object):
                     key = record.serializable_value("key")
                     if key not in self.key_model:
                         self.key_model[key] = []
-                    self.key_model[key].append(data_settings.model_name())
+                    self.key_model[key].append((data_settings.app_name(), data_settings.model_name(),))
             except Exception, e:
                 pass
 
