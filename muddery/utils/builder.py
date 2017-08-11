@@ -27,11 +27,11 @@ def get_object_record(obj_key):
         The object's data record.
     """
     record = None
-    model_names = OBJECT_KEY_HANDLER.get_models(obj_key)
-    for model_name in model_names:
+    data_names = OBJECT_KEY_HANDLER.get_models(obj_key)
+    for app_name, model_name in data_names:
         try:
             # Get record.
-            model_obj = apps.get_model(settings.WORLD_DATA_APP, model_name)
+            model_obj = apps.get_model(app_name, model_name)
             record = model_obj.objects.get(key=obj_key)
             break
         except Exception, e:
@@ -57,7 +57,7 @@ def build_object(obj_key, caller=None, set_location=True):
     try:
         record = get_object_record(obj_key)
     except Exception, e:
-        ostring = "Can not get the data of %s: %s." % (obj_key, e)
+        ostring = "Can not get data of %s: %s." % (obj_key, e)
         print(ostring)
         print(traceback.print_exc())
         if caller:
@@ -65,7 +65,7 @@ def build_object(obj_key, caller=None, set_location=True):
         pass
 
     if not record:
-        ostring = "Can not get the data of %s." % obj_key
+        ostring = "Can not get data of %s." % obj_key
         print(ostring)
         print(traceback.print_exc())
         if caller:
