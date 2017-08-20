@@ -35,27 +35,26 @@ class PluginsHandler(object):
         
         self.clear()
         
-        for plugin_name in settings.PLUGINS:
-            self.load_plugin(plugin_name)
+        for plugin_key in settings.PLUGINS:
+            self.load_plugin(plugin_key)
+
+        self.load_notifications()
             
-        for plugin_name in settings.PLUGINS:
-            self.load_notifications()
-            
-    def load_plugin(self, plugin_name):
+    def load_plugin(self, plugin_key):
         """
         Load a plugin.
         
         Args:
-            plugin: (string) plugin's name.
+            plugin_key: (string) plugin's key.
         """
-        logger.log_info("Loading plugin: %s" % plugin_name)
-        module_path = settings.MUDDERY_PLUGINS_DIR + "." + plugin_name + ".handler"
+        logger.log_info("Loading plugin: %s" % plugin_key)
+        module_path = settings.MUDDERY_PLUGINS_DIR + "." + plugin_key + ".handler"
         module = __import__(module_path, fromlist=["handler"])
         handler = module.HANDLER
         if handler:
-            self.plugins[plugin_name] = handler
+            self.plugins[plugin_key] = handler
             handler.at_init()
-            logger.log_info("%s loaded." % plugin_name)
+            logger.log_info("%s loaded." % plugin_key)
             
     def load_data(self):
         """
@@ -122,6 +121,16 @@ class PluginsHandler(object):
             except Exception, e:
                 err_message = "Can not load commands of plugin '%s': %s" % (name, e)
                 logger.log_tracemsg(err_message)
+
+
+    def is_loaded(self, plugin_key):
+        """
+        Is this plugin loaded.
+
+        Args:
+            plugin_key: (string) plugin's key.
+        """
+        return plugin_key in self.plugins
 
 
 # main plugins handler

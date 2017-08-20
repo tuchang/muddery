@@ -12,7 +12,6 @@ from muddery.utils.localized_strings_handler import _
 from muddery.utils.dialogue_handler import DIALOGUE_HANDLER
 from muddery.utils.builder import build_object, delete_object
 from muddery.utils.game_settings import GAME_SETTINGS
-from muddery.utils.notifications import notification
 from muddery.worlddata.data_sets import DATA_SETS
 
 
