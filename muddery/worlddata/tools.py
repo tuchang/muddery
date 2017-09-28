@@ -37,34 +37,32 @@ def export_py_localized_strings(request):
     """
     response = http.HttpResponseNotModified()
 
-    temp_file = None
     try:
         # write to a file
-        temp_file = tempfile.TemporaryFile()
-
+        file = tempfile.TemporaryFile()
+        
         # header
-        temp_file.write('"category","origin","local"\n')
+        file.write('"category","origin","local"\n')
         
         # get strings
         strings = utils.all_unlocalized_py_strings(True)
         
         for s in strings:
             if s[1]:
-                temp_file.write('"%s","%s",""\n' % (s[1], s[0]))
+                file.write('"%s","%s",""\n' % (s[1], s[0]))
             else:
-                temp_file.write(',"%s",""\n' % (s[0]))
+                file.write(',"%s",""\n' % (s[0]))
 
-        temp_file.seek(0)
+        file.seek(0)
         filename = time.strftime("strings_%Y%m%d_%H%M%S.csv", time.localtime())
-        response = http.StreamingHttpResponse(utils.file_iterator(temp_file))
+        response = http.StreamingHttpResponse(utils.file_iterator(file))
         response['Content-Type'] = 'application/octet-stream'
         response['Content-Disposition'] = 'attachment;filename="%s"' % filename
     except Exception, e:
         message = "Can't export game data: %s" % e
         logger.log_tracemsg(message)
 
-        if temp_file:
-            temp_file.close()
+        file.close()
         return render(request, 'fail.html', {"message": message})
 
     return response
@@ -77,28 +75,26 @@ def export_js_localized_strings(request):
     """
     response = http.HttpResponseNotModified()
 
-    temp_file = None
     try:
         # write to a file
-        temp_file = tempfile.TemporaryFile()
+        file = tempfile.TemporaryFile()
         
         # get strings
         strings = utils.all_unlocalized_js_strings(True)
 
         for s in strings:
-            temp_file.write('"%s": "",\n' % s)
+            file.write('"%s": "",\n' % s)
 
-        temp_file.seek(0)
+        file.seek(0)
         filename = time.strftime("strings_%Y%m%d_%H%M%S.js", time.localtime())
-        response = http.StreamingHttpResponse(utils.file_iterator(temp_file))
+        response = http.StreamingHttpResponse(utils.file_iterator(file))
         response['Content-Type'] = 'application/octet-stream'
         response['Content-Disposition'] = 'attachment;filename="%s"' % filename
     except Exception, e:
         message = "Can't export game data: %s" % e
         logger.log_tracemsg(message)
 
-        if temp_file:
-            temp_file.close()
+        file.close()
         return render(request, 'fail.html', {"message": message})
 
     return response

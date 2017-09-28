@@ -18,23 +18,23 @@ class Handler(object):
     """
     This model translates default strings into localized strings.
     """
-    name = "shops"
+    key = "shops"
 
     def at_init(self):
         """
         Called when init this plugin.
         """
         # Add data handler.
-        group = ("file_data", "plugin", self.name,)
-        DATA_SETS.add(FileDataHandler("typeclasses", self.name), group + ("typeclasses",))
-        DATA_SETS.add(FileDataHandler("shops", self.name), group + ("object_data",))
-        DATA_SETS.add(FileDataHandler("shop_goods", self.name), group + ("object_data",))
-        DATA_SETS.add(FileDataHandler("npc_shops", self.name), group)
+        group = ("file_data", "plugin", self.key,)
+        DATA_SETS.add(FileDataHandler("typeclasses", self.key), group + ("typeclasses",))
+        DATA_SETS.add(FileDataHandler("shops", self.key), group + ("object_data",))
+        DATA_SETS.add(FileDataHandler("shop_goods", self.key), group + ("object_data",))
+        DATA_SETS.add(FileDataHandler("npc_shops", self.key), group)
         
     def at_load_data(self):
         # load plugin data
-        data_path = os.path.join(settings.MUDDERY_PLUGINS_PATH, self.name, "data")
-        for data_handler in DATA_SETS.group(self.name):
+        data_path = os.path.join(settings.MUDDERY_PLUGINS_PATH, self.key, "data")
+        for data_handler in DATA_SETS.group(self.key):
             logger.log_info("Loading data " + data_handler.model_name())
             try:
                 data_handler.import_from_path(data_path)
@@ -72,7 +72,7 @@ class Handler(object):
         Load sender's shop.
         """
         # shops records
-        shop_records = DATA_SETS.data("npc_shops", self.name).filter(npc=sender.get_data_key())
+        shop_records = DATA_SETS.data("npc_shops", self.key).filter(npc=sender.get_data_key())
 
         shop_keys = set([record.shop for record in shop_records])
 
@@ -88,7 +88,7 @@ class Handler(object):
             shop_key = shop_record.shop
             if shop_key not in sender.db.shops:
                 # Create shop object.
-                shop_obj = build_object(shop_key, self.name)
+                shop_obj = build_object(shop_key, self.key)
                 if not shop_obj:
                     logger.log_errmsg("Can't create shop: %s" % shop_key)
                     continue

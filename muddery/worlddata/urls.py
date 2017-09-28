@@ -3,7 +3,8 @@ This structures the (simple) structure of the
 webpage 'application'.
 """
 from django.conf.urls import url
-from muddery.worlddata import views, plugins, tools
+from muddery.worlddata import views
+from muddery.worlddata import tools
 
 urlpatterns = [
     url(r'^$', views.worldeditor, name="index"),
@@ -12,6 +13,5 @@ urlpatterns = [
     url(r'^editor/.*add.html$', views.add_form, name="add_form"),
     url(r'^editor/.*list.html$', views.list_view, name="list_view"),
     url(r'^editor/.*image.png$', views.get_image, name="image_view"),
-    url(r'^editor/.*plugins.html$', plugins.plugins, name="plugins"),
     url(r'^editor/.*tools.html$', tools.tools, name="tools"),
     url(r'^editor/', views.editor, name="editor"),]

@@ -380,6 +380,8 @@ class MudderyObject(DefaultObject):
 
         # set icon
         self.set_icon(getattr(self.dfield, "icon", ""))
+        
+        self.db.shops = {}
 
     def reset_location(self):
         """
