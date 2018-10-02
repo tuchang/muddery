@@ -20,12 +20,12 @@ class DialogueSentencesMapper(object):
 
     def filter(self, key):
         """
-        Get dialogue sentences.
+        Get dialogue sentences, order by ordinal.
 
         Args:
             key: (string) dialogue's key.
         """
-        return self.objects.filter(dialogue=key)
+        return self.objects.filter(dialogue=key).order_by("ordinal")
 
 
 DIALOGUE_SENTENCES = DialogueSentencesMapper()

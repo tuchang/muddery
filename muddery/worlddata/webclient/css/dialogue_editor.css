@@ -1,16 +1,386 @@
-
-.sentence-title {
-    display: inline-block;
+.template {
+    display: none;
 }
 
-#sentence-table {
-    border: 1px solid #000;
-    max-width: 100%;
+body {
+    background-color: #FFF;
+    color: #434343;
+    font-family: "Lato", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    height: 100%;
+    padding: 0;
 }
 
-#sentence-table td, #sentence-table th {
-    font-weight: normal;
-    word-wrap: break-word;
-    padding: 2px 5px;
-    border: 1px solid #000;
+.jtk-bootstrap {
+  min-height:100vh;
+  display:flex;
+  flex-direction: column;
+}
+
+.jtk-bootstrap .jtk-page-container {
+    display:flex;
+    width:100vw;
+    justify-content: center;
+    flex:1;
+  }
+
+  .jtk-bootstrap .jtk-container {
+    width: 60%;
+    max-width:800px;
+  }
+
+  .jtk-bootstrap-wide .jtk-container {
+      width: 80%;
+      max-width:1187px;
+  }
+
+.sentences-window {
+    position: relative;
+    margin-top:10px;
+}
+
+.sentences-window .description {
+    font-size: 13px;
+    margin-top: 25px;
+    padding: 13px;
+    margin-bottom: 22px;
+    background-color: #f4f5ef;
+}
+
+.sentences-window .description li {
+    list-style-type: disc !important;
+}
+
+#canvas {
+    height:550px;
+    max-height:700px;
+    border:1px solid #CCC;
+    background-color:white;
+    display: flex;
+    margin-left:0;
+}
+
+.miniview {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 100;
+}
+
+
+.jtk-demo-dataset {
+    text-align: left;
+    max-height: 600px;
+    overflow: auto;
+}
+
+.demo-title {
+    float:left;
+    font-size:18px;
+}
+
+.jp-controls {
+    top: 25px;
+    color: #FFF;
+    margin-right: 10px;
+    position: absolute;
+    left: 25px;
+    z-index: 1;
+}
+
+.jp-controls i {
+    background-color: #3E7E9C;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0;
+    padding: 4px;
+}
+
+li {
+    list-style-type: none;
+}
+
+/* ------------------------ node palette -------------------- */
+
+.sidebar {
+    margin:0;
+    padding:0;
+    padding-top: 7px;
+    padding-right: 10px;
+    width:150px;
+    float:left;
+    text-align:center;
+    height: 550px;
+    background-color: #84acb3;
+}
+
+.sidebar ul li {
+    background-color: #234b5e;
+    border-radius: 11px;
+    color: #f7ebca;
+    cursor: move;
+    margin-bottom: 10px;
+    margin-left: 6px;
+    padding: 8px;
+    width:128px;
+}
+
+.sidebar ul {
+    width:100%;
+    padding:0;
+}
+
+.sidebar ul li:hover {
+    background-color: #577a8b;
+}
+
+.sidebar i {
+    float:left;
+}
+
+/* ---------------------------------------------------------------------------------------------------- */
+/* --- jsPlumb setup ---------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------------- */
+
+.jtk-connector {
+    z-index:9;
+}
+
+.jtk-endpoint {
+    z-index:12;
+    opacity:0.8;
+    cursor:pointer;
+}
+
+.jtk-overlay {
+    background-color: white;
+    color: #434343;
+    font-weight: 400;
+    padding: 4px;
+    z-index:10;
+
+}
+
+.jtk-overlay.jtk-hover {
+    color: #434343;
+}
+
+path {
+    cursor:pointer;
+}
+
+.delete {
+    padding: 2px;
+    cursor: pointer;
+    float: left;
+    font-size: 10px;
+    line-height: 20px;
+}
+
+.add, .edit {
+    cursor: pointer;
+    float:right;
+    font-size: 10px;
+    line-height: 20px;
+    margin-right:2px;
+    padding: 2px;
+}
+
+.edit:hover {
+    color: #ff8000;
+}
+
+.selected-mode {
+    color:#E4F013;
+}
+
+.connect {
+    width:10px;
+    height:10px;
+    background-color:#f76258;
+    position:absolute;
+    bottom: 13px;
+    right: 5px;
+}
+
+/* header styles */
+
+.demo-links {
+    position: fixed;
+    right: 0;
+    top: 57px;
+    font-size: 11px;
+    background-color: white;
+    opacity: 0.8;
+    padding-right: 10px;
+    padding-left: 5px;
+    text-transform: uppercase;
+    z-index:100001;
+}
+
+.demo-links div {
+    display:inline;
+    margin-right:7px;
+    margin-left:7px;
+}
+
+.demo-links i {
+    padding:4px;
+}
+
+/*
+.navbar-top {
+    background-color: #3c565d;
+    border:none;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.navbar-nav > li > a {
+    border: none;
+    color: #FFF;
+    padding: 6px 10px;
+    text-decoration: none;
+}
+
+.social-nav {
+    color: #FFF;
+    float: right;
+    font-size: 22px;
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+    background-color: transparent;
+    color: #cdcc73;
+    text-decoration: none;
+}
+*/
+
+.demo {
+    /* for IE10+ touch devices */
+    touch-action:none;
+}
+
+.sentence-node {
+    padding: 10px;
+    position: absolute;
+    width: 300px;
+    z-index: 4;
+    border: 1px solid #2e6f9a;
+    box-shadow: 2px 2px 19px #e0e0e0;
+    -o-box-shadow: 2px 2px 19px #e0e0e0;
+    -webkit-box-shadow: 2px 2px 19px #e0e0e0;
+    -moz-box-shadow: 2px 2px 19px #e0e0e0;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    opacity: 0.8;
+    cursor: move;
+    background-color: white;
+    font-size: 11px;
+    -webkit-transition: background-color 0.25s ease-in;
+    -moz-transition: background-color 0.25s ease-in;
+    transition: background-color 0.25s ease-in;
+}
+
+.sentence-node:hover {
+    background-color: #5c96bc;
+    color: white;
+
+}
+
+.aLabel {
+    -webkit-transition: background-color 0.25s ease-in;
+    -moz-transition: background-color 0.25s ease-in;
+    transition: background-color 0.25s ease-in;
+}
+
+.aLabel.jtk-hover, .jtk-source-hover, .jtk-target-hover {
+    background-color: #1e8151;
+    color: white;
+}
+
+.aLabel {
+    background-color: white;
+    opacity: 0.8;
+    padding: 0.3em;
+    border-radius: 0.5em;
+    border: 1px solid #346789;
+    cursor: pointer;
+}
+
+.sentence-footer {
+    text-align: center;
+}
+
+.add-connection {
+    width: 1em;
+    height: 1em;
+    margin: 5px auto 0 auto;
+    background-color: rgb(46, 111, 154);
+    cursor: pointer;
+    box-shadow: 0 0 2px black;
+    -webkit-transition: -webkit-box-shadow 0.25s ease-in;
+    -moz-transition: -moz-box-shadow 0.25s ease-in;
+    transition: box-shadow 0.25s ease-in;
+}
+
+.add-connection:hover {
+    box-shadow: 0 0 6px black;
+}
+
+.jtk-endpoint {
+    z-index: 3;
+    visibility: hidden;
+}
+
+#opened {
+    left: 10em;
+    top: 5em;
+}
+
+#phone1 {
+    left: 35em;
+    top: 12em;
+    width: 7em;
+}
+
+#inperson {
+    left: 12em;
+    top: 23em;
+}
+
+#phone2 {
+    left: 28em;
+    top: 24em;
+}
+
+#rejected {
+    left: 10em;
+    top: 35em;
+}
+
+.dragHover {
+    border: 2px solid orange;
+}
+
+path, .jtk-endpoint { cursor:pointer; }
+
+/*
+    Assigned to an element that is the `Container` in a `render` call.
+    Elements that are acting as Surface widgets should have overflow:hidden set to prevent libs from
+    scrolling them during drag (we don't want scrollbars; we have an infinite canvas). Position is set to
+    `relative` as this is the parent for nodes, which are positioned absolute (and for absolute positioning
+    to work, you need to ensure the parent node has `position:relative`). This style also sets some default
+    values for the cursor - using a `grab` cursor where supported.
+*/
+.surface {
+    overflow: hidden !important;
+    position: relative;
+    cursor: move;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+    touch-action:none;
+    overflow: scroll !important;
+    cursor:default;
 }

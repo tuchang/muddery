@@ -68,7 +68,7 @@ controller = {
         window.parent.controller.setFrameSize();
     },
 
-    queryTableFailed: function() {
+    queryTableFailed: function(code, message, data) {
         window.parent.controller.notify("ERROR", code + ": " + message);
     },
 

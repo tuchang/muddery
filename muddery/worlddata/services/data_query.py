@@ -78,15 +78,22 @@ def query_dialogue_sentences(dialogue_key):
     Args:
         dialogue_key: (string) dialogue's key
     """
+    sentences = []
     fields = query_fields(DIALOGUE_SENTENCES.model_name)
     records = DIALOGUE_SENTENCES.filter(dialogue_key)
-    rows = []
     for record in records:
-        line = [str(record.serializable_value(field["name"])) for field in fields]
-        rows.append(line)
+        sentence = [(field["name"], (record.serializable_value(field["name"]))) for field in fields]
+        sentence = dict(sentence)
+        sentence["root"] = False
+        sentence["next"] = ""
+        sentences.append(sentence)
 
-    table = {
-        "fields": fields,
-        "records": rows,
-    }
-    return table
+    # set root
+    if sentences:
+        sentences[0]["root"] = True
+
+    # add next
+    for index in xrange(len(sentences) - 1):
+        sentences[index]["next"] = [sentences[index + 1]["key"]]
+
+    return sentences
