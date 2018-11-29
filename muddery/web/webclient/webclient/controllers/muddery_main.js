@@ -1100,6 +1100,9 @@ MudderyMain.prototype.setClient = function(settings) {
 		}
 	}
 
+	// dialogue settings
+	$$.component.dialogue.setCanClose(settings["can_close_dialogue"]);
+
 	// honour settings
 	$$.component.honours.setMinHonourLevel(settings["min_honour_level"]);
 

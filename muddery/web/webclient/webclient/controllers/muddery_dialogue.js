@@ -12,6 +12,7 @@ MudderyDialogue = function(el) {
 	BasePopupController.call(this, el);
 	
 	this.target = null;
+	this.can_close = true;
 }
 
 MudderyDialogue.prototype = prototype(BasePopupController.prototype);
@@ -57,6 +58,13 @@ MudderyDialogue.prototype.onObjsMovedOut = function(objects) {
             }
         }
     }
+}
+
+/*
+ * Dialogue's settings.
+ */
+MudderyDialogue.prototype.setCanClose(can_close) {
+    this.can_close = can_close;
 }
 
 /*

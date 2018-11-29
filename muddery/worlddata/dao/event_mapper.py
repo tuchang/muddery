@@ -12,9 +12,31 @@ from muddery.utils import defines
 from muddery.worlddata.dao.common_mapper_base import ObjectsMapper
 
 
-def get_object_event(object_key):
+class EventMapper(object):
     """
-    Get object's event.
+    Events data.
     """
-    model = apps.get_model(settings.WORLD_DATA_APP, "event_data")
-    return model.objects.filter(trigger_obj=object_key)
+    def __init__(self):
+        self.model_name = "event_data"
+        self.model = apps.get_model(settings.WORLD_DATA_APP, self.model_name)
+        self.objects = self.model.objects
+
+    def get_object_event(self, object_key):
+        """
+        Get an object's event.
+
+        Args:
+            object_key: (string) object's key.
+        """
+        return self.objects.filter(trigger_obj=object_key)
+
+    def has_event(self, object_key):
+        """
+        If this object has events, returns True.
+
+        Args:
+            object_key: (string) object's key.
+        """
+        return self.objects.filter(trigger_obj=object_key).count() > 0
+
+EVENTS = EventMapper()

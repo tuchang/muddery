@@ -361,26 +361,6 @@ class dialogues(BaseModels.dialogues):
 
 #------------------------------------------------------------
 #
-# store dialogue quest dependencies
-#
-#------------------------------------------------------------
-class dialogue_quest_dependencies(BaseModels.dialogue_quest_dependencies):
-    "Store dialogue quest dependencies."
-    pass
-
-
-#------------------------------------------------------------
-#
-# store dialogue relations
-#
-#------------------------------------------------------------
-class dialogue_relations(BaseModels.dialogue_relations):
-    "Store dialogue relations."
-    pass
-
-
-#------------------------------------------------------------
-#
 # store dialogue sentences
 #
 #------------------------------------------------------------

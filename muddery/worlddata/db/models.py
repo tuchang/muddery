@@ -55,9 +55,6 @@ class game_settings(models.Model):
     # can close dialogue box or not.
     can_close_dialogue = models.BooleanField(blank=True, default=False)
 
-    # Send one dialogue to the client a time.
-    single_dialogue_sentence = models.BooleanField(blank=True, default=True)
-
     # Can resume unfinished dialogues automatically.
     auto_resume_dialogues = models.BooleanField(blank=True, default=True)
 
@@ -1091,8 +1088,8 @@ class dialogues(models.Model):
     # dialogue's name
     name = models.CharField(max_length=NAME_LENGTH, default="")
 
-    # condition to show this dialogue
-    condition = models.CharField(max_length=CONDITION_LENGTH, blank=True)
+    # root sentence
+    sentence = models.CharField(max_length=KEY_LENGTH)
 
     class Meta:
         "Define Django meta options"
@@ -1103,58 +1100,6 @@ class dialogues(models.Model):
 
     def __unicode__(self):
         return self.name + " (" + self.key + ")"
-
-
-# ------------------------------------------------------------
-#
-# store dialogue quest dependencies
-#
-# ------------------------------------------------------------
-class dialogue_quest_dependencies(models.Model):
-    "Store dialogue quest dependencies."
-
-    # The key of a dialogue.
-    # dialogue's key
-    dialogue = models.CharField(max_length=KEY_LENGTH, db_index=True)
-
-    # The key of a quest.
-    # related quest's key
-    dependency = models.CharField(max_length=KEY_LENGTH)
-
-    # The key of a quest dependency type.
-    # dependency's type
-    type = models.CharField(max_length=KEY_LENGTH)
-
-    class Meta:
-        "Define Django meta options"
-        abstract = True
-        app_label = "worlddata"
-        verbose_name = "Dialogue Quest Dependency"
-        verbose_name_plural = "Dialogue Quest Dependencies"
-
-
-# ------------------------------------------------------------
-#
-# store dialogue relations
-#
-# ------------------------------------------------------------
-class dialogue_relations(models.Model):
-    "Store dialogue relations."
-
-    # The key of a dialogue.
-    # dialogue's key
-    dialogue = models.CharField(max_length=KEY_LENGTH, db_index=True)
-
-    # The key of a dialogue.
-    # next dialogue's key
-    next_dlg = models.CharField(max_length=KEY_LENGTH, db_index=True)
-
-    class Meta:
-        "Define Django meta options"
-        abstract = True
-        app_label = "worlddata"
-        verbose_name = "Dialogue Relation"
-        verbose_name_plural = "Dialogue Relations"
 
 
 # ------------------------------------------------------------
@@ -1172,9 +1117,6 @@ class dialogue_sentences(models.Model):
     # dialogue's key
     dialogue = models.CharField(max_length=KEY_LENGTH, db_index=True)
 
-    # sentence's ordinal
-    ordinal = models.IntegerField()
-
     # sentence's speaker
     speaker = models.CharField(max_length=NAME_LENGTH, blank=True)
 
@@ -1183,6 +1125,12 @@ class dialogue_sentences(models.Model):
 
     # sentence's content
     content = models.TextField(blank=True)
+
+    # condition to show this dialogue
+    condition = models.CharField(max_length=CONDITION_LENGTH, blank=True)
+
+    # next sentences
+    nexts = models.TextField(blank=True)
 
     class Meta:
         "Define Django meta options"

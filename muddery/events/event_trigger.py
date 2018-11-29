@@ -8,7 +8,7 @@ import random
 from muddery.utils import defines
 from muddery.statements.statement_handler import STATEMENT_HANDLER
 from muddery.utils import utils
-from muddery.worlddata.dao import event_mapper
+from muddery.worlddata.dao.event_mapper import EVENTS
 from muddery.mappings.event_action_set import EVENT_ACTION_SET
 from django.conf import settings
 from django.apps import apps
@@ -30,7 +30,7 @@ class EventTrigger(object):
         defines.EVENT_TRIGGER_DIE,      # caller die. trigger_obj: killer_id
         defines.EVENT_TRIGGER_TRAVERSE, # before traverse an exit. trigger_obj: exit_id
         defines.EVENT_TRIGGER_ACTION,   # when a character act to an object. trigger_obj: object_id
-        defines.EVENT_TRIGGER_SENTENCE,   # when a character finishes a dialogue sentence. trigger_obj: sentence_id
+        defines.EVENT_TRIGGER_SENTENCE, # when a character finishes a sentence. trigger_obj: sentence_id
     ]
 
     def __init__(self, owner, object_key=None):
@@ -44,7 +44,7 @@ class EventTrigger(object):
             object_key = owner.get_data_key()
 
         # Load events.
-        event_records = event_mapper.get_object_event(object_key)
+        event_records = EVENTS.get_object_event(object_key)
 
         for record in event_records:
             event = {}
@@ -169,6 +169,6 @@ class EventTrigger(object):
 
     def at_sentence(self, character, obj):
         """
-        Called when a character finishes a dialogue sentence.
+        Called when a character finishes a sentence.
         """
         triggered = self.trigger(defines.EVENT_TRIGGER_SENTENCE, character, obj)

@@ -1116,14 +1116,13 @@ class MudderyPlayerCharacter(TYPECLASS("CHARACTER")):
         self.save_current_dialogue(sentences_list, npc)
         self.msg({"dialogues_list": sentences_list})
 
-    def continue_dialogue(self, npc, dialogue, sentence):
+    def continue_dialogue(self, npc, sentence_key):
         """
         Continue current dialogue.
 
         Args:
             npc: (optional) NPC's object.
-            dialogue: current dialogue's key.
-            sentence: current sentence's ordinal.
+            sentence: current sentence's key.
 
         Returns:
             None
@@ -1133,19 +1132,19 @@ class MudderyPlayerCharacter(TYPECLASS("CHARACTER")):
             if not self.db.current_dialogue:
                 return
 
-            if (dialogue, sentence) not in self.db.current_dialogue["sentences_all"]:
-                # Can not find specified dialogue in current dialogues.
+            if sentence_key not in self.db.current_dialogue["sentences_all"]:
+                # Can not find specified sentence.
                 return
 
         try:
             # Finish current sentence
-            DIALOGUE_HANDLER.finish_sentence(self, npc, dialogue, sentence)
+            DIALOGUE_HANDLER.finish_sentence(sentence_key, self, npc)
         except Exception, e:
-            ostring = "Can not finish sentence %s-%s: %s" % (dialogue, sentence, e)
+            ostring = "Can not finish sentence %s: %s" % (sentence_key, e)
             logger.log_tracemsg(ostring)
 
         # Get next sentences_list.
-        sentences_list = DIALOGUE_HANDLER.get_next_sentences_list(self,
+        sentences_list = DIALOGUE_HANDLER.get_next_sentences(self,
                                                                   npc,
                                                                   dialogue,
                                                                   sentence,

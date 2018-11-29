@@ -14,10 +14,9 @@ from muddery.utils.game_settings import GAME_SETTINGS
 from muddery.mappings.event_action_set import EVENT_ACTION_SET
 from muddery.worlddata.dao.dialogues_mapper import DIALOGUES
 from muddery.worlddata.dao.dialogue_sentences_mapper import DIALOGUE_SENTENCES
-from muddery.worlddata.dao.dialogue_relations_mapper import DIALOGUE_RELATIONS
-from muddery.worlddata.dao.dialogue_quest_dependencies_mapper import DIALOGUE_QUESTION
 from muddery.worlddata.dao.npc_dialogues_mapper import NPC_DIALOGUES
 from muddery.mappings.quest_status_set import QUEST_STATUS_SET
+from muddery.worlddata.dao.event_mapper import EVENTS
 from muddery.events.event_trigger import EventTrigger
 from evennia.utils import logger
 
@@ -40,228 +39,6 @@ class DialogueHandler(object):
         else:
             return "%(" + char + ")s"
 
-    def __init__(self):
-        """
-        Initialize the handler.
-        """
-        self.can_close_dialogue = GAME_SETTINGS.get("can_close_dialogue")
-        self.single_sentence_mode = GAME_SETTINGS.get("single_dialogue_sentence")
-        self.dialogue_storage = {}
-    
-    def load_cache(self, dialogue):
-        """
-        To reduce database accesses, add a cache.
-        """
-        if not dialogue:
-            return
-
-        if dialogue in self.dialogue_storage:
-            # already cached
-            return
-
-        # Add cache of the whole dialogue.
-        self.dialogue_storage[dialogue] = {}
-        
-        # Get db model
-        try:
-            dialogue_record = DIALOGUES.get(dialogue)
-        except Exception, e:
-            return
-
-        sentences = DIALOGUE_SENTENCES.filter(dialogue)
-        if not sentences:
-            return
-
-        nexts = DIALOGUE_RELATIONS.filter(dialogue)
-
-        dependencies = DIALOGUE_QUESTION.filter(dialogue)
-
-        # Add db fields to data object.
-        data = {}
-
-        data["condition"] = dialogue_record.condition
-
-        data["dependencies"] = []
-        for dependency in dependencies:
-            data["dependencies"].append({"quest": dependency.dependency,
-                                         "type": dependency.type})
-
-        data["sentences"] = []
-        for sentence in sentences:
-            speaker_model = self.speaker_escape.sub(self.escape_fun, sentence.speaker)
-
-            # get events and quests
-            event_trigger = EventTrigger(None, sentence.key)
-            events = event_trigger.get_events()
-            provide_quest = []
-            finish_quest = []
-            if defines.EVENT_TRIGGER_SENTENCE in events:
-                for event_info in events[defines.EVENT_TRIGGER_SENTENCE]:
-                    if event_info["action"] == "ACTION_ACCEPT_QUEST":
-                        action = EVENT_ACTION_SET.get(event_info["action"])
-                        provide_quest.extend(action.get_quests(event_info["key"]))
-                    elif event_info["action"] == "ACTION_TURN_IN_QUEST":
-                        action = EVENT_ACTION_SET.get(event_info["action"])
-                        finish_quest.extend(action.get_quests(event_info["key"]))
-
-            data["sentences"].append({"key": sentence.key,
-                                      "dialogue": dialogue,
-                                      "ordinal": sentence.ordinal,
-                                      "speaker_model": speaker_model,
-                                      "icon": sentence.icon,
-                                      "content": sentence.content,
-                                      "event": event_trigger,
-                                      "provide_quest": provide_quest,
-                                      "finish_quest": finish_quest,
-                                      "can_close": self.can_close_dialogue})
-
-        # sort sentences by ordinal
-        data["sentences"].sort(key=lambda x:x["ordinal"])
-        count = 0
-        for sentence in data["sentences"]:
-            sentence["sentence"] = count
-            sentence["is_last"] = False
-            count += 1
-
-        data["sentences"][-1]["is_last"] = True
-
-        data["nexts"] = [next_one.next_dlg for next_one in nexts]
-
-        # Add to cache.
-        self.dialogue_storage[dialogue] = data
-
-    def get_dialogue(self, dialogue):
-        """
-        Get specified dialogue.
-        """
-        if not dialogue:
-            return
-
-        # Load cache.
-        self.load_cache(dialogue)
-
-        if not dialogue in self.dialogue_storage:
-            # Can not find dialogue.
-            return
-
-        return self.dialogue_storage[dialogue]
-
-    def get_sentence(self, dialogue, sentence):
-        """
-        Get specified sentence.
-        """
-        dlg = self.get_dialogue(dialogue)
-
-        try:
-            return dlg["sentences"][sentence]
-        except Exception, e:
-            pass
-
-        return
-
-    def check_need_get_next(self, sentences):
-        """
-        Check if the next sentence can be added to the sentence list.
-        If a sentence will effect the character's status, it should not be
-        added to the sentence list.
-        """
-        if self.single_sentence_mode:
-            return False
-
-        if len(sentences) != 1:
-            return False
-
-        sentence = sentences[0]
-        if sentence['is_last'] or sentence['event']:
-            return False
-
-        return True
-
-    def get_npc_sentences_list(self, caller, npc):
-        """
-        Get a sentences list to send to the caller at one time.
-        
-        Args:
-            caller: (object) the character who want to start a talk.
-            npc: (object) the NPC that the character want to talk to.
-        
-        Returns:
-            sentences_list: (list) a list of sentences that can be show in order.
-        """
-        if not caller:
-            return []
-
-        if not npc:
-            return []
-
-        sentences_list = []
-
-        # Get the first sentences.
-        sentences = self.get_npc_sentences(caller, npc)
-        output = self.create_output_sentences(sentences, caller, npc)
-        if output:
-            sentences_list.append(output)
-        else:
-            return sentences_list
-
-        # Get next sentences.
-        while self.check_need_get_next(sentences):
-            sentences = self.get_next_sentences(caller,
-                                                npc.dbref,
-                                                sentences[0]['dialogue'],
-                                                sentences[0]['sentence'])
-            output = self.create_output_sentences(sentences, caller, npc)
-            if output:
-                sentences_list.append(output)
-            else:
-                break
-
-        return sentences_list
-
-    def get_next_sentences_list(self, caller, npc, dialogue, sentence, include_current):
-        """
-        Get a sentences list from the current sentence.
-        
-        Args:
-            caller: (object) the character who want to start a talk.
-            npc: (object) the NPC that the character want to talk to.
-            dialogue: (string) the key of the currrent dialogue.
-            sentence: (int) the number of current sentence.
-            include_current: (boolean) if the sentence list includes current sentence.
-
-        Returns:
-            sentences_list: (list) a list of sentences that can be show in order.
-        """
-        sentences_list = []
-
-        # current sentence
-        sentences = []
-        if include_current:
-            data = self.get_sentence(dialogue, sentence)
-            if data:
-                sentences = [data]
-        else:
-            sentences = self.get_next_sentences(caller,
-                                                npc,
-                                                dialogue,
-                                                sentence)
-        output = self.create_output_sentences(sentences, caller, npc)
-        if output:
-            sentences_list.append(output)
-
-        while self.check_need_get_next(sentences):
-            sentences = self.get_next_sentences(caller,
-                                                npc,
-                                                sentences[0]['dialogue'],
-                                                sentences[0]['sentence'])
-            output = self.create_output_sentences(sentences, caller, npc)
-            if output:
-                sentences_list.append(output)
-            else:
-                break
-
-        return sentences_list
-
     def get_npc_sentences(self, caller, npc):
         """
         Get NPC's sentences that can show to the caller.
@@ -279,90 +56,56 @@ class DialogueHandler(object):
         if not npc:
             return
 
+        # all sentences
         sentences = []
 
-        # Get npc's dialogues.
+        # Get NPC's dialogues.
         for dlg_key in npc.dialogues:
-            # Get all dialogues.
-            npc_dlg = self.get_dialogue(dlg_key)
-            if not npc_dlg:
-                continue
+            # Get dialogue's sentences.
+            dialogue = DIALOGUES.get(dlg_key)
 
-            # Match conditions.
-            if not STATEMENT_HANDLER.match_condition(npc_dlg["condition"], caller, npc):
-                continue
+            # added sentence's key
+            added = set()
+            sentences.extend(self.get_sentences(dialogue.sentence, caller, npc, added))
 
-            # Match dependencies.
-            match = True
-            for dep in npc_dlg["dependencies"]:
-                status = QUEST_STATUS_SET.get(dep["type"])
-                if not status.match(caller, dep["quest"]):
-                    match = False
-                    break
-
-            if not match:
-                continue
-
-            if npc_dlg["sentences"]:
-                # If has sentence, use it.
-                sentences.append(npc_dlg["sentences"][0])
-
-        if not sentences:
-            # Use default sentences.
-            # Default sentences should not have condition and dependencies.
-            for dlg_key in npc.default_dialogues:
-                npc_dlg = self.get_dialogue(dlg_key)
-                if npc_dlg:
-                    sentences.append(npc_dlg["sentences"][0])
-            
         return sentences
 
-    def get_next_sentences(self, caller, npc, current_dialogue, current_sentence):
+    def get_sentences(self, sentence_key, caller, npc, added):
         """
-        Get current sentence's next sentences.
-        
+        Get a dialogue's sentences that can show to the caller.
+
         Args:
+            sentence_key: (string) a dialogue's key.
             caller: (object) the character who want to start a talk.
             npc: (object) the NPC that the character want to talk to.
-            dialogue: (string) the key of the currrent dialogue.
-            sentence: (int) the number of current sentence.
+            added: (set) sentences that has already added.
 
         Returns:
             sentences: (list) a list of available sentences.
         """
-        if not caller:
-            return
-
-        # Get current dialogue.
-        dlg = self.get_dialogue(current_dialogue)
-        if not dlg:
-            return
-
         sentences = []
 
-        try:
-            # If has next sentence, use next sentence.
-            sentences.append(dlg["sentences"][current_sentence + 1])
-        except Exception, e:
-            # Else get next dialogues.
-            for dlg_key in dlg["nexts"]:
-                # Get next dialogue.
-                next_dlg = self.get_dialogue(dlg_key)
-                if not next_dlg:
-                    continue
+        record = DIALOGUE_SENTENCES.get(sentence_key)
+        if not STATEMENT_HANDLER.match_condition(record.condition, caller, npc):
+            # if not match condition
+            return sentences
 
-                if not next_dlg["sentences"]:
-                    continue
+        # add this sentence
+        sentences.append(self.get_output(record, caller, npc))
+        added.add(record.key)
 
-                if not STATEMENT_HANDLER.match_condition(next_dlg["condition"], caller, npc):
-                    continue
+        # check events
+        if EVENTS.has_event(sentence_key):
+            # If this sentence has events, it must notify the server to continue.
+            return sentences
 
-                for dep in next_dlg["dependencies"]:
-                    status = QUEST_STATUS_SET.get(dep["type"])
-                    if not status.match(caller, dep["quest"]):
-                        continue
+        # add nexts
+        next_sentences = record.nexts.split(",")
+        for next_sentence in next_sentences:
+            if next_sentence in added:
+                continue
 
-                sentences.append(next_dlg["sentences"][0])
+            sentences.extend(self.get_sentences(next, caller, npc, added))
 
         return sentences
 
@@ -408,41 +151,35 @@ class DialogueHandler(object):
 
         return icon
 
-    def create_output_sentences(self, originals, caller, npc):
+    def get_output(self, record, caller, npc):
         """
-        Transform the sentences from the storing format to the output format.
+        Create a sentence of an output format.
 
         Args:
-            originals: (list) original sentences data
+            record: (record) sentence's data
             caller: (object) caller object
             npc: (object, optional) NPC object
 
         Returns:
-            (list) a list of sentence's data
+            (dict) a sentence's data
         """
-        if not originals:
-            return []
+        speaker_model = self.speaker_escape.sub(self.escape_fun, record.speaker)
+        speaker = self.get_dialogue_speaker_name(caller, npc, speaker_model)
+        icon = self.get_dialogue_speaker_icon(record.icon, caller, npc, speaker_model)
 
-        sentences_list = []
-        speaker = self.get_dialogue_speaker_name(caller, npc, originals[0]["speaker_model"])
-        icon = self.get_dialogue_speaker_icon(originals[0]["icon"], caller, npc, originals[0]["speaker_model"])
-        for original in originals:
-            sentence = {"speaker": speaker,             # speaker's name
-                        "dialogue": original["dialogue"],   # dialogue's key
-                        "sentence": original["sentence"],   # sentence's ordinal
-                        "content": original["content"],
-                        "icon": icon,
-                        "can_close": original["can_close"],}
-            if npc:
-                sentence["npc"] = npc.dbref             # NPC's dbref
-            else:
-                sentence["npc"] = ""
+        sentence = {"speaker": speaker,                 # speaker's name
+                    "sentence": record.key,             # sentence's key
+                    "nexts": record.nexts.split(","),   # this sentence's next sentences
+                    "content": record.content,
+                    "icon": icon}
+        if npc:
+            sentence["npc"] = npc.dbref             # NPC's dbref
+        else:
+            sentence["npc"] = ""
 
-            sentences_list.append(sentence)
+        return sentence
 
-        return sentences_list
-
-    def finish_sentence(self, caller, npc, dialogue, sentence_no):
+    def finish_sentence(self, sentence_key, caller, npc):
         """
         A sentence finished, do it's event.
         """
@@ -469,7 +206,7 @@ class DialogueHandler(object):
             # last sentence
             self.finish_dialogue(caller, dialogue)
 
-    def finish_dialogue(self, caller, dialogue):
+    def finish_dialogue(self, caller, npc, dialogue):
         """
         A dialogue finished, do it's action.
         args:
@@ -479,13 +216,12 @@ class DialogueHandler(object):
         if not caller:
             return
 
-        caller.quest_handler.at_objective(defines.OBJECTIVE_TALK, dialogue)
+        # trigger dialogue's event
+        if self.dialogue_storage["event"]:
+            self.dialogue_storage["event"].at_sentence(caller, npc)
 
-    def clear(self):
-        """
-        clear cache
-        """
-        self.dialogue_storage = {}
+
+        caller.quest_handler.at_objective(defines.OBJECTIVE_TALK, dialogue)
 
     def have_quest(self, caller, npc):
         """

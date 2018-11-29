@@ -9,7 +9,7 @@ from evennia.utils import logger
 from muddery.worlddata.dao import common_mappers as CM
 from muddery.worlddata.dao import general_query_mapper, model_mapper
 from muddery.worlddata.dao.dialogue_sentences_mapper import DIALOGUE_SENTENCES
-from muddery.worlddata.dao.event_mapper import get_object_event
+from muddery.worlddata.dao.event_mapper import EVENTS
 from muddery.worlddata.services.general_query import query_fields
 from muddery.mappings.event_action_set import EVENT_ACTION_SET
 from muddery.utils.exception import MudderyError, ERR
@@ -42,7 +42,7 @@ def query_object_events(object_key):
         object_key: (string) object' key.
     """
     fields = query_fields("event_data")
-    records = get_object_event(object_key)
+    records = EVENTS.get_object_event(object_key)
     rows = []
     for record in records:
         line = [str(record.serializable_value(field["name"])) for field in fields]
